@@ -5,10 +5,9 @@
 #include "resources.hpp"
 #include "utils.hpp"
 
-ImageResource::ImageResource(SDL_Renderer* renderer, AppImageId id, const char* name, const char* path) {
-    debug("Loading image [0x%.8x] %s: %s", id, name, path);
+ImageResource::ImageResource(SDL_Renderer* renderer, const char* name, const char* path) {
+    debug("Loading image %s: %s", name, path);
 
-    this->id = id;
     this->name = name;
     surface = IMG_Load(path);
     texture = SDL_CreateTextureFromSurface(renderer, surface);
@@ -23,7 +22,7 @@ ImageResource::ImageResource(SDL_Renderer* renderer, AppImageId id, const char* 
 }
 
 ImageResource::~ImageResource() {
-    debug("Unloading image [0x%.8x] %s", id, name);
+    debug("Unloading image %s", name);
     SDL_FreeSurface(surface);
     SDL_DestroyTexture(texture);
 }

@@ -1,24 +1,10 @@
 #pragma once
 
-#include <SDL2/SDL_stdinc.h>
-#include <SDL2/SDL_render.h>
-#include "SDL2_extras.hpp"
+#define RES_IMG_CROSS "RES_IMG_CROSS"
+#define __PATH__RES_IMG_CROSS "assets/images/cross.png"
 
-typedef enum {
-    RES_IMG_CROSS,
-    RES_IMG_CIRCLE,
-    RES_IMG_BOARD,
-    RES_IMG_TOTAL
-} AppImageId;
+#define RES_IMG_CIRCLE "RES_IMG_CIRCLE"
+#define __PATH__RES_IMG_CIRCLE "assets/images/circle.png"
 
-class ImageResource {
-public:
-    Uint32 id;
-    const char* name;
-    SDL_Texture* texture;
-    SDL_Surface* surface;
-    SDL_Size* size;
-
-    ImageResource(SDL_Renderer* renderer, AppImageId id, const char* name, const char* path);
-    ~ImageResource();
-};
+#define RES_IMG_BOARD "RES_IMG_BOARD"
+#define __PATH__RES_IMG_BOARD "assets/images/board.png"

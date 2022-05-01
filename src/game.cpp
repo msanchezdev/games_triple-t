@@ -1,6 +1,6 @@
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_rect.h>
-#include "core.hpp"
+#include "engine/engine.hpp"
 #include "resources.hpp"
 
 #define BOARD_SIZE 3
@@ -33,6 +33,12 @@ void Game_Init() {
     board[2][0] = 'x';
 }
 
+void Game_Resources() {
+    App_LoadImage(RES_IMG_BOARD);
+    App_LoadImage(RES_IMG_CROSS);
+    App_LoadImage(RES_IMG_CIRCLE);
+}
+
 void Game_Cleanup() {
     delete board_rect;
     delete symbol_size;
@@ -52,8 +58,8 @@ void Game_DrawBoard() {
     SDL_RenderCopy(app.renderer, board_image->texture, NULL, board_rect);
 }
 
-void Game_DrawSymbol(AppImageId symbol, Uint8 x, Uint8 y) {
-    ImageResource* image = app.images[symbol];
+void Game_DrawSymbol(const char* image_key, Uint8 x, Uint8 y) {
+    ImageResource* image = app.images[image_key];
 
     // draw the symbol centered in their cell
     SDL_Rect rect {

@@ -6,6 +6,11 @@
 void Game_Init();
 
 /**
+ * Load all resources used by the game here.
+ */
+void Game_Resources();
+
+/**
  * Main render function for the game.
  * All assets should be rendered here
  */
