@@ -1,5 +1,5 @@
-GAME_OBJS = $(wildcard src/*.cpp)
-ENGINE_OBJS = $(wildcard src/engine/*.cpp)
+GAME_OBJS = $(wildcard src/*.cpp src/*.hpp)
+ENGINE_OBJS = $(wildcard src/engine/*.cpp src/engine/*.hpp)
 CC = g++
 
 # -w suppresses all warnings
@@ -17,13 +17,15 @@ BIN_DIR = bin
 ENGINE_OBJ = libtriton.so
 GAME_BIN = triple-t
 
-game: $(GAME_OBJS) engine
+game: $(BIN_DIR)/$(GAME_BIN)
+$(BIN_DIR)/$(GAME_BIN): $(GAME_OBJS) $(BIN_DIR)/$(ENGINE_OBJ)
 	mkdir -p $(BIN_DIR)
-	$(CC) $(wildcard obj/*.o) $(GAME_OBJS) $(COMPILER_FLAGS) $(GAME_COMPILER_FLAGS) $(LINKER_FLAGS) $(GAME_LINKER_FLAGS) -o $(BIN_DIR)/$(GAME_BIN)
+	$(CC) $< $(COMPILER_FLAGS) $(GAME_COMPILER_FLAGS) $(LINKER_FLAGS) $(GAME_LINKER_FLAGS) -o $@
 
-engine: $(ENGINE_OBJS)
+engine: $(BIN_DIR)/$(ENGINE_OBJ)
+$(BIN_DIR)/$(ENGINE_OBJ): $(ENGINE_OBJS)
 	mkdir -p $(BIN_DIR);
-	$(CC) $(ENGINE_OBJS) $(ENGINE_COMPILER_FLAGS) $(COMPILER_FLAGS) $(LINKER_FLAGS) $(ENGINE_LINKER_FLAGS) -o $(BIN_DIR)/$(ENGINE_OBJ)
+	$(CC) $^ $(ENGINE_COMPILER_FLAGS) $(COMPILER_FLAGS) $(LINKER_FLAGS) $(ENGINE_LINKER_FLAGS) -o $@
 
 	# for file in $(ENGINE_OBJS); do \
 	# 	filename=`basename $(OBJ_DIR)/$${file%.cpp}.o`; \
@@ -34,8 +36,6 @@ engine: $(ENGINE_OBJS)
 	# 		exit 1; \
 	# 	fi; \
 	# done
-
-
 
 assets: $(wildcard src/assets/**)
 	mkdir -p $(BIN_DIR)/assets
