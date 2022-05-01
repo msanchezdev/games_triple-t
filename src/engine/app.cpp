@@ -1,22 +1,30 @@
 #include "defs.hpp"
 #include "app.hpp"
+#include "utils.hpp"
+#include <map>
+#include <list>
+#include <functional>
 
-App::App() {
-    renderer = NULL;
-    window = NULL;
-    window_size = {
-        .w = SCREEN_WIDTH,
-        .h = SCREEN_HEIGHT
-    };
-}
+App::App() {}
 
-App::~App() {
-    // Unload images
-    for (auto& image : images) {
-        delete image.second;
-    }
-}
+App::~App() {}
 
 void App::LoadImage(const char* name, const char* path) {
     app.images[name] = new ImageResource(app.renderer, name, path);
+}
+
+void App::Cleanup() {
+    debug("Unloading images");
+    for (auto& image : images) {
+        delete image.second;
+    }
+
+    debug("Unregistering event handlers");
+    delete events;
+
+    debug("Destroying renderer");
+    SDL_DestroyRenderer(app.renderer);
+
+    debug("Closing main window");
+    SDL_DestroyWindow(app.window);
 }

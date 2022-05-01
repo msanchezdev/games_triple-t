@@ -4,7 +4,7 @@ CC = g++
 
 # -w suppresses all warnings
 # -g enables debugging
-COMPILER_FLAGS = -w -g
+COMPILER_FLAGS = -w -g -std=c++17
 ENGINE_COMPILER_FLAGS = -shared -fPIC
 GAME_COMPILER_FLAGS =
 
@@ -33,3 +33,9 @@ assets: $(wildcard src/assets/**)
 
 run: game assets
 	cd $(BIN_DIR) && ./$(GAME_BIN)
+
+debug: game assets
+	cd $(BIN_DIR) && gdb ./$(GAME_BIN)
+
+debug-engine: engine
+	cd $(BIN_DIR) && gdb ./$(ENGINE_OBJ)

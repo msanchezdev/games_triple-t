@@ -14,7 +14,7 @@ void Game_Resources();
  * Main render function for the game.
  * All assets should be rendered here
  */
-void Game_Render();
+void Game_Render(void* object);
 
 /**
  * Function used to cleanup game data.

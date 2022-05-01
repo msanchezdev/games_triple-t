@@ -1,3 +1,6 @@
+/**
+ * TODO: Move core logic to app.cpp
+ */
 #include <map>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
@@ -71,7 +74,7 @@ void TRT_RenderLoop() {
     SDL_SetRenderDrawColor(app.renderer, 0xFF, 0x00, 0x00, 0xFF);
     SDL_RenderFillRect(app.renderer, &windowRect);
 
-    Game_Render();
+    app.events->Broadcast(TRT_EventType::EVENT_RENDER);
 
     SDL_RenderPresent(app.renderer);
     SDL_RenderClear(app.renderer);
@@ -100,7 +103,7 @@ void TRT_EventLoop() {
             break;
 
         default:
-            debug("Event Received: 0x%.8x", event.type);
+            debug("Event Received: %x", event.type);
             break;
         }
     }
@@ -109,11 +112,7 @@ void TRT_EventLoop() {
 void TRT_Shutdown() {
     debug("Shutting down the application");
 
-    debug("Destroying renderer");
-    SDL_DestroyRenderer(app.renderer);
-
-    debug("Closing main window");
-    SDL_DestroyWindow(app.window);
+    app.Cleanup();
 
     debug("Stopping image subsystem");
     IMG_Quit();
