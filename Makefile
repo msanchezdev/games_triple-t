@@ -27,16 +27,6 @@ $(BIN_DIR)/$(ENGINE_OBJ): $(ENGINE_OBJS)
 	mkdir -p $(BIN_DIR);
 	$(CC) $^ $(ENGINE_COMPILER_FLAGS) $(COMPILER_FLAGS) $(LINKER_FLAGS) $(ENGINE_LINKER_FLAGS) -o $@
 
-	# for file in $(ENGINE_OBJS); do \
-	# 	filename=`basename $(OBJ_DIR)/$${file%.cpp}.o`; \
-	# 	$(CC) $$file $(COMPILER_FLAGS) $(ENGINE_COMPILER_FLAGS) -c -o $(OBJ_DIR)/$$filename; \
-	# 	\
-	# 	if [ $$? -ne 0 ]; then \
-	# 		echo "Error compiling $$file"; \
-	# 		exit 1; \
-	# 	fi; \
-	# done
-
 assets: $(wildcard src/assets/**)
 	mkdir -p $(BIN_DIR)/assets
 	cp -r src/assets $(BIN_DIR)

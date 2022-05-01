@@ -10,16 +10,16 @@
 
 App app;
 
-void TT_Initialize() {
-    TT_InitializeVideo();
-    TT_InitializeGameWindow();
-    TT_InitializeImages();
+void TRT_Initialize() {
+    TRT_InitializeVideo();
+    TRT_InitializeGameWindow();
+    TRT_InitializeImages();
 
     Game_Resources();
     Game_Init();
 }
 
-void TT_InitializeVideo() {
+void TRT_InitializeVideo() {
     debug("Initializing video subsystem");
 
     if (SDL_InitSubSystem(SDL_INIT_VIDEO)) {
@@ -30,7 +30,7 @@ void TT_InitializeVideo() {
     debug("Video subsystem initialized successfully");
 }
 
-void TT_InitializeGameWindow() {
+void TRT_InitializeGameWindow() {
     debug("Creating game window");
     app.window = SDL_CreateWindow(
         "Triple T",
@@ -54,7 +54,7 @@ void TT_InitializeGameWindow() {
     debug("Game window opened successfully");
 }
 
-void TT_InitializeImages() {
+void TRT_InitializeImages() {
     debug("Initializing image subsystem");
     int formatLoaded = IMG_Init(IMG_INIT_PNG);
 
@@ -66,7 +66,7 @@ void TT_InitializeImages() {
     debug("Image subsystem initialized successfully");
 }
 
-void TT_RenderLoop() {
+void TRT_RenderLoop() {
     SDL_Rect windowRect = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
     SDL_SetRenderDrawColor(app.renderer, 0xFF, 0x00, 0x00, 0xFF);
     SDL_RenderFillRect(app.renderer, &windowRect);
@@ -77,11 +77,11 @@ void TT_RenderLoop() {
     SDL_RenderClear(app.renderer);
 }
 
-void TT_EventLoop() {
+void TRT_EventLoop() {
     debug("Starting event loop");
 
     while (true) {
-        TT_RenderLoop();
+        TRT_RenderLoop();
 
         SDL_Event event;
         if (!SDL_PollEvent(&event)) continue;
@@ -106,7 +106,7 @@ void TT_EventLoop() {
     }
 }
 
-void TT_Shutdown() {
+void TRT_Shutdown() {
     debug("Shutting down the application");
 
     debug("Destroying renderer");
@@ -122,7 +122,7 @@ void TT_Shutdown() {
     SDL_Quit();
 }
 
-void TT_Debug_PrintInitializedSubsystems() {
+void TRT_Debug_PrintInitializedSubsystems() {
     Uint32 subsystems = SDL_WasInit(0);
 
     debug("Timer: %s", flag_status_str(subsystems & SDL_INIT_TIMER));

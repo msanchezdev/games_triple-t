@@ -3,11 +3,11 @@
 #include "app.hpp"
 #include "resources.hpp"
 
-void TT_Initialize();
-void TT_InitializeVideo();
-void TT_InitializeGameWindow();
-void TT_InitializeImages();
-void TT_RenderLoop();
-void TT_EventLoop();
-void TT_Shutdown();
-void TT_Debug_PrintInitializedSubsystems();
+void TRT_Initialize();
+void TRT_InitializeVideo();
+void TRT_InitializeGameWindow();
+void TRT_InitializeImages();
+void TRT_RenderLoop();
+void TRT_EventLoop();
+void TRT_Shutdown();
+void TRT_Debug_PrintInitializedSubsystems();
