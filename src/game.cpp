@@ -5,9 +5,9 @@
 #include "resources.hpp"
 
 #define BOARD_SIZE 3
-char board[BOARD_SIZE][BOARD_SIZE];
+// char board[BOARD_SIZE][BOARD_SIZE];
 
-TRT_Sprite* spriteBoard;
+TRT_GameObject* board = new TRT_GameObject();
 
 #pragma region Base
 
@@ -17,14 +17,36 @@ void Game_Resources() {
     App_LoadImage(RES_IMG_CIRCLE);
 }
 
-void Game_Render(TRT_EventSubject object) {
+void Game_Render(TRT_EventArgs<>* object) {
+    // after 5 seconds hide the board
+    if (SDL_GetTicks() > 5000) {
+        board->GetComponent<TRT_Sprite>()->visible = false;
+    }
+}
+
+void Board_OnMouseEnter(TRT_EventArgs<>* object) {
+
+}
+
+void Board_OnMouseLeave(TRT_EventArgs<>* object) {
+
 }
 
 void Game_Init() {
-    spriteBoard = (new TRT_Sprite(app.images[RES_IMG_BOARD]->surface, {
+    board->AddComponent(
+        new TRT_Sprite(app.images[RES_IMG_BOARD]->surface, {
             .x = app.window_size.w / 2 - app.images[RES_IMG_BOARD]->surface->w / 2,
-            .y = app.window_size.h / 2 - app.images[RES_IMG_BOARD]->surface->h / 2,
-        }))->Register();
+            .y = app.window_size.h / 2 - app.images[RES_IMG_BOARD]->surface->h / 2
+        })
+    );
+
+    app.events->Subscribe(board, TRT_EventType::EVENT_RENDER, new TRT_RenderEventHandler(Game_Render));
+
+    /*
+    sprite = new Sprite();
+    sprite->Register();
+
+    */
 
     // app.RegisterEventHandler(0, TRT_EventType::EVENT_RENDER, &Game_Render);
 
@@ -40,10 +62,11 @@ void Game_Init() {
     //     .h = board_image->size->h / BOARD_SIZE
     // };
 
-    board[1][1] = 'o';
+    // board[1][1] = 'o';
 }
 
 void Game_Cleanup() {
+    delete board;
 }
 
 #pragma endregion Base
@@ -60,7 +83,7 @@ void Game_Cleanup() {
 //         .w = image->size->w,
 //         .h = image->size->h
 //     };
-//     SDL_RenderCopy(app.renderer, image->texture, NULL, &rect);
+//     SDL_RenderCopy(app.renderer, image->texture, nullptr, &rect);
 // }
 
 // void Game_DrawSymbols() {

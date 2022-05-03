@@ -41,7 +41,7 @@ void TRT_InitializeGameWindow() {
         SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_NO_FLAGS
     );
 
-    if (app.window == NULL) {
+    if (app.window == nullptr) {
         critical("Unable to open game window: %s", SDL_GetError());
         exit(EXIT_CODE_ERROR);
     }
@@ -49,7 +49,7 @@ void TRT_InitializeGameWindow() {
     debug("Creating main renderer");
     app.renderer = SDL_CreateRenderer(app.window, -1, SDL_RendererFlags::SDL_RENDERER_ACCELERATED);
 
-    if (app.renderer == NULL) {
+    if (app.renderer == nullptr) {
         critical("Unable to create main renderer: %s", SDL_GetError());
         exit(EXIT_CODE_ERROR);
     }
@@ -103,7 +103,7 @@ void TRT_EventLoop() {
             break;
 
         default:
-            debug("Event Received: %x", event.type);
+            debug("Event Received: %#x", event.type);
             break;
         }
     }

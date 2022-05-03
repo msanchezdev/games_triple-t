@@ -18,8 +18,8 @@ using namespace std;
 class App {
 public:
     SDL_Size window_size = { SCREEN_WIDTH, SCREEN_HEIGHT };
-    SDL_Window* window = NULL;
-    SDL_Renderer* renderer = NULL;
+    SDL_Window* window = nullptr;
+    SDL_Renderer* renderer = nullptr;
 
     map<const char*, ImageResource*> images;
     TRT_EventListener* events = new TRT_EventListener();

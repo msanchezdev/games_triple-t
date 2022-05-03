@@ -1,12 +1,18 @@
 #pragma once
+
 #include "SDL2/SDL_render.h"
+#include "game_object.hpp"
 #include "types.hpp"
 
-class TRT_Sprite {
+
+void TRT_SpriteRenderer_OnRender(TRT_EventArgs<void>* sprite);
+
+class TRT_Sprite : public TRT_Component {
 public:
     TRT_Point2D position;
     TRT_Size2D size;
     SDL_Texture* texture;
+    bool visible = true;
 
 
     TRT_Sprite(SDL_Surface* surface);
@@ -15,6 +21,6 @@ public:
     ~TRT_Sprite();
 
     void Render();
-    TRT_Sprite* Register();
-    TRT_Sprite* Unregister();
+    void OnAttach(TRT_GameObject* game_object) override;
+    void OnDetach(TRT_GameObject* game_object) override;
 };

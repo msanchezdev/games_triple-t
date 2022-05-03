@@ -16,7 +16,7 @@ ImageResource::ImageResource(SDL_Renderer* renderer, const char* name, const cha
         .h = surface->h
     };
 
-    if (surface == NULL) {
+    if (surface == nullptr) {
         error("Unable to load image %s: %s", name, SDL_GetError());
     }
 }

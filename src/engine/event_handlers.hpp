@@ -1,13 +1,26 @@
+#pragma once
+
 enum TRT_EventType {
     EVENT_RENDER,
     EVENT_MOUSE_MOVE,
+    EVENT_MOUSE_ENTER,
+    EVENT_MOUSE_LEAVE,
 
     EVENT_TOTAL,
 };
 
-typedef void* TRT_EventSubject;
+#include "game_object.hpp"
 
-typedef void (*TRT_EventHandlerFunction)(TRT_EventSubject, ...);
+template <class D = void>
+struct TRT_EventArgs {
+    TRT_GameObject* sender;
+
+    // private data used by the event handler associated to the game object
+    D* data;
+};
+
+template<class D = void>
+using TRT_EventHandlerFunction = void (*)(TRT_EventArgs<D>*, ...);
 
 /**
  * Base Event Handler class.
@@ -26,17 +39,18 @@ typedef void (*TRT_EventHandlerFunction)(TRT_EventSubject, ...);
  * Instances of the generated class don't need to be disposed, they are automatically disposed when the event is
  * unsubscribed.
  */
+template<class D = void>
 class TRT_EventHandler {
 private:
-    TRT_EventHandlerFunction _handler;
+    TRT_EventHandlerFunction<D> _handler;
 
 public:
-    TRT_EventHandler(TRT_EventHandlerFunction handler) {
+    TRT_EventHandler(TRT_EventHandlerFunction<D> handler) {
         this->_handler = handler;
     }
 
     template <class ... Args>
-    void call(TRT_EventSubject object, Args ... args) {
+    void call(TRT_EventArgs<D>* object, Args ... args) {
         this->_handler(object, args...);
     }
 
@@ -45,17 +59,26 @@ public:
     }
 };
 
-#define DefineEventHandler(name, ...) \
-    class name : public TRT_EventHandler { \
+#define DefineEventHandlerWithoutArgs(name, data_type) \
+    class name : public TRT_EventHandler<data_type> { \
     public: \
-        name(void (*handler)(__VA_ARGS__)) \
-            : TRT_EventHandler((TRT_EventHandlerFunction)handler) { \
+        name(void (*handler)(TRT_EventArgs<data_type>* event)) \
+            : TRT_EventHandler((TRT_EventHandlerFunction<data_type>)handler) { \
+        }; \
+    };
+
+#define DefineEventHandler(name, data_type, ...) \
+    class name : public TRT_EventHandler<data_type> { \
+    public: \
+        name(void (*handler)(TRT_EventArgs<data_type>* event, __VA_ARGS__)) \
+            : TRT_EventHandler((TRT_EventHandlerFunction<data_type>)handler) { \
         }; \
     };
 
 #pragma region Event Handler Classes
 // all event handlers will receive the event subject as the first argument
 
-DefineEventHandler(TRT_RenderEventHandler, TRT_EventSubject object);
+DefineEventHandlerWithoutArgs(TRT_RenderEventHandler, void);
+DefineEventHandlerWithoutArgs(TRT_MouseEnterHandler, void);
 
 #pragma endregion Event Handler Classes
