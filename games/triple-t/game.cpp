@@ -1,7 +1,8 @@
 #include <SDL2/SDL_timer.h>
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_rect.h>
-#include "engine/engine.hpp"
+#include <triton/engine.hpp>
+#include <triton/components/sprite/sprite.hpp>
 #include "resources.hpp"
 
 #define BOARD_SIZE 3

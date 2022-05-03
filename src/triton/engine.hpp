@@ -4,4 +4,3 @@
 #include "app.hpp"
 #include "utils.hpp"
 #include "types.hpp"
-#include "sprite.hpp"

@@ -1,11 +1,8 @@
 #pragma once
 
-#include "SDL2/SDL_render.h"
-#include "game_object.hpp"
-#include "types.hpp"
-
-
-void TRT_SpriteRenderer_OnRender(TRT_EventArgs<void>* sprite);
+#include <SDL2/SDL_render.h>
+#include <triton/game_object.hpp>
+#include <triton/types.hpp>
 
 class TRT_Sprite : public TRT_Component {
 public:

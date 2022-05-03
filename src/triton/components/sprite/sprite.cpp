@@ -1,7 +1,6 @@
 #include <SDL2/SDL.h>
-#include "app.hpp"
+#include <triton/app.hpp>
 #include "sprite.hpp"
-
 
 void TRT_Sprite_OnRender(TRT_EventArgs<void>* sprite) {
     TRT_Sprite* sprite_component = sprite->sender->GetComponent<TRT_Sprite>();

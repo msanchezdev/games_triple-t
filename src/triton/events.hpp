@@ -70,6 +70,4 @@ void TRT_EventListener::Broadcast(TRT_EventType type, Args ... args) {
             handler->call(&event, args...);
         }
     }
-
-    // delete event;
 }
