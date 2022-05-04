@@ -11,7 +11,6 @@ public:
     SDL_Texture* texture;
     bool visible = true;
 
-
     TRT_Sprite(SDL_Surface* surface);
     TRT_Sprite(SDL_Surface* surface, TRT_Point2D position);
     TRT_Sprite(SDL_Surface* surface, TRT_Point2D position, TRT_Size2D size);

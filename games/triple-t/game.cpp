@@ -3,6 +3,7 @@
 #include <SDL2/SDL_rect.h>
 #include <triton/engine.hpp>
 #include <triton/components/sprite/sprite.hpp>
+#include <triton/components/mouse_listener/mouse_listener.hpp>
 #include "resources.hpp"
 
 #define BOARD_SIZE 3
@@ -25,12 +26,28 @@ void Game_Render(TRT_EventArgs<>* object) {
     }
 }
 
-void Board_OnMouseEnter(TRT_EventArgs<>* object) {
-
+void Board_OnMouseEnter(TRT_EventArgs<>* object, TRT_MouseEnterEvent* event) {
+    info("mouse enter (%d, %d)", event->x, event->y);
 }
 
-void Board_OnMouseLeave(TRT_EventArgs<>* object) {
+void Board_OnMouseMove(TRT_EventArgs<TRT_MouseMoveEventData>* object, TRT_MouseMoveEvent* event) {
+    info("mouse move (%d, %d)", event->x, event->y);
+}
 
+void Board_OnMouseLeave(TRT_EventArgs<>* object, TRT_MouseLeaveEvent* event) {
+    info("mouse leave (%d, %d)", event->x, event->y);
+}
+
+void Board_OnMouseOver(TRT_EventArgs<>* object, TRT_MouseOverEvent* event) {
+    info("mouse over (%d, %d)", event->x, event->y);
+}
+
+void Board_OnMouseDown(TRT_EventArgs<>* object, TRT_MouseDownEvent* event) {
+    info("mouse down (%d, %d), button: %x, state: %x", event->x, event->y, event->button, event->state);
+}
+
+void Board_OnMouseUp(TRT_EventArgs<>* object, TRT_MouseUpEvent* event) {
+    info("mouse up (%d, %d), button: %x, state: %x", event->x, event->y, event->button, event->state);
 }
 
 void Game_Init() {
@@ -41,7 +58,18 @@ void Game_Init() {
         })
     );
 
-    app.events->Subscribe(board, TRT_EventType::EVENT_RENDER, new TRT_RenderEventHandler(Game_Render));
+    board->AddComponent(
+        new TRT_MouseListener2D(TRT_MouseListenerHandlers {
+            .on_mouse_enter = new TRT_MouseEnterHandler(Board_OnMouseEnter),
+            .on_mouse_leave = new TRT_MouseLeaveHandler(Board_OnMouseLeave),
+            .on_mouse_down = new TRT_MouseDownHandler(Board_OnMouseDown),
+            .on_mouse_up = new TRT_MouseUpHandler(Board_OnMouseUp),
+            .on_mouse_move = new TRT_MouseMoveHandler(Board_OnMouseMove),
+            .on_mouse_over = new TRT_MouseOverHandler(Board_OnMouseOver)
+        })
+    );
+
+    // app.events->Subscribe(board, TRT_EventType::EVENT_RENDER, new TRT_RenderEventHandler(Game_Render));
 
     /*
     sprite = new Sprite();

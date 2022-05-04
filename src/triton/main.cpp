@@ -2,7 +2,7 @@
 #include "core.hpp"
 
 int main(int argc, char** argv) {
-    SDL_LogSetPriority(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_VERBOSE);
+    SDL_LogSetPriority(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_DEBUG);
 
     TRT_Initialize();
     TRT_Debug_PrintInitializedSubsystems();

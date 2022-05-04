@@ -3,12 +3,13 @@
 enum TRT_EventType {
     EVENT_RENDER,
     EVENT_MOUSE_MOVE,
-    EVENT_MOUSE_ENTER,
-    EVENT_MOUSE_LEAVE,
+    EVENT_MOUSE_DOWN,
+    EVENT_MOUSE_UP,
 
     EVENT_TOTAL,
 };
 
+#include <SDL2/SDL_events.h>
 #include "game_object.hpp"
 
 template <class D = void>
@@ -54,7 +55,7 @@ public:
         this->_handler(object, args...);
     }
 
-    bool compare(TRT_EventHandler* other) {
+    bool compare(TRT_EventHandler<>* other) {
         return this->_handler == other->_handler;
     }
 };
@@ -79,6 +80,32 @@ public:
 // all event handlers will receive the event subject as the first argument
 
 DefineEventHandlerWithoutArgs(TRT_RenderEventHandler, void);
-DefineEventHandlerWithoutArgs(TRT_MouseEnterHandler, void);
+
+using TRT_MouseEnterEvent = SDL_MouseMotionEvent;
+DefineEventHandler(TRT_MouseEnterHandler, void, TRT_MouseEnterEvent*);
+
+using TRT_MouseLeaveEvent = SDL_MouseMotionEvent;
+DefineEventHandler(TRT_MouseLeaveHandler, void, TRT_MouseLeaveEvent*);
+
+using TRT_MouseUpEvent = SDL_MouseButtonEvent;
+DefineEventHandler(TRT_MouseUpHandler, void, TRT_MouseUpEvent*);
+
+using TRT_MouseDownEvent = SDL_MouseButtonEvent;
+DefineEventHandler(TRT_MouseDownHandler, void, TRT_MouseDownEvent*);
+
+typedef struct TRT_MouseMoveEventData {
+    bool is_inside;
+};
+using TRT_MouseMoveEvent = SDL_MouseMotionEvent;
+DefineEventHandler(TRT_MouseMoveHandler, TRT_MouseMoveEventData, TRT_MouseMoveEvent*);
+
+struct TRT_MouseOverEvent {
+    Uint32 timestamp;   /**< In milliseconds, populated using SDL_GetTicks() */
+    Uint32 windowID;    /**< The window with mouse focus, if any */
+    Uint32 state;       /**< The current button state */
+    Sint32 x;           /**< X coordinate, relative to window */
+    Sint32 y;           /**< Y coordinate, relative to window */
+};
+DefineEventHandler(TRT_MouseOverHandler, void, TRT_MouseOverEvent*);
 
 #pragma endregion Event Handler Classes

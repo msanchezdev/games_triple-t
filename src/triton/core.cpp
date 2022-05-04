@@ -102,6 +102,18 @@ void TRT_EventLoop() {
             }
             break;
 
+        case SDL_EventType::SDL_MOUSEMOTION:
+            app.events->Broadcast(TRT_EventType::EVENT_MOUSE_MOVE, &event.motion);
+            break;
+
+        case SDL_EventType::SDL_MOUSEBUTTONDOWN:
+            app.events->Broadcast(TRT_EventType::EVENT_MOUSE_DOWN, &event.button);
+            break;
+
+        case SDL_EventType::SDL_MOUSEBUTTONUP:
+            app.events->Broadcast(TRT_EventType::EVENT_MOUSE_UP, &event.button);
+            break;
+
         default:
             debug("Event Received: %#x", event.type);
             break;
