@@ -11,7 +11,8 @@ void TRT_MouseListener2D_MouseChecker(TRT_EventArgs<TRT_MouseMoveEventData>* obj
     // FIXME: only checks against first sprite attached to the component
     TRT_Sprite* sprite = object->sender->GetComponent<TRT_Sprite>();
     SDL_Point mouse_pos = { event->x, event->y };
-    SDL_Rect sprite_rect = { sprite->position.x, sprite->position.y, sprite->size.width, sprite->size.height };
+    SDL_Rect sprite_rect = { sprite->position->x, sprite->position->y, sprite->size->width, sprite->size->height };
+
     for (auto mouse_listener : mouse_listeners) {
         if (SDL_PointInRect(&mouse_pos, &sprite_rect)) {
             if (!event_data->is_inside) {
@@ -40,7 +41,7 @@ void TRT_MouseListener2D_MouseDownChecker(TRT_EventArgs<>* object, TRT_MouseDown
 
     TRT_Sprite* sprite = object->sender->GetComponent<TRT_Sprite>();
     SDL_Point mouse_pos = { event->x, event->y };
-    SDL_Rect sprite_rect = { sprite->position.x, sprite->position.y, sprite->size.width, sprite->size.height };
+    SDL_Rect sprite_rect = { sprite->position->x, sprite->position->y, sprite->size->width, sprite->size->height };
     for (auto mouse_listener : mouse_listeners) {
         if (SDL_PointInRect(&mouse_pos, &sprite_rect)) {
             if (mouse_listener->handlers.on_mouse_down) {
@@ -55,7 +56,7 @@ void TRT_MouseListener2D_MouseUpChecker(TRT_EventArgs<>* object, TRT_MouseUpEven
 
     TRT_Sprite* sprite = object->sender->GetComponent<TRT_Sprite>();
     SDL_Point mouse_pos = { event->x, event->y };
-    SDL_Rect sprite_rect = { sprite->position.x, sprite->position.y, sprite->size.width, sprite->size.height };
+    SDL_Rect sprite_rect = { sprite->position->x, sprite->position->y, sprite->size->width, sprite->size->height };
     for (auto mouse_listener : mouse_listeners) {
         if (SDL_PointInRect(&mouse_pos, &sprite_rect)) {
             if (mouse_listener->handlers.on_mouse_up) {

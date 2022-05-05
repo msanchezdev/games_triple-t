@@ -16,7 +16,9 @@ typedef struct {
 class TRT_MouseListener2D : public TRT_Component {
 public:
     TRT_MouseListenerHandlers handlers;
+    void* data;
     TRT_MouseListener2D(TRT_MouseListenerHandlers handlers) : handlers(handlers) {}
+    TRT_MouseListener2D(TRT_MouseListenerHandlers handlers, void* data) : handlers(handlers), data(data) {}
 
     void OnAttach(TRT_GameObject* game_object) override;
     void OnDetach(TRT_GameObject* game_object) override;
