@@ -7,32 +7,28 @@
 #include "resources.hpp"
 #include "logic.hpp"
 
-
 TRT_GameObject board;
 TRT_GameObject board_tile[BOARD_SIZE][BOARD_SIZE];
 
-
 #pragma region Base
 
-void Game_Resources() {
-    App_LoadImage(RES_IMG_BOARD);
-    App_LoadImage(RES_IMG_CROSS);
-    App_LoadImage(RES_IMG_CIRCLE);
-}
+int main(int argc, char** argv) {
+    SDL_LogSetPriority(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_DEBUG);
 
-void Game_Init() {
-    TRT_Point2D* board_position = new TRT_Point2D {
+    app.Initialize();
+
+    TRT_Point2D board_position {
         .x = app.window_size.w / 2 - app.images[RES_IMG_BOARD]->surface->w / 2,
         .y = app.window_size.h / 2 - app.images[RES_IMG_BOARD]->surface->h / 2
     };
 
     board.AddComponent(
-        new TRT_Sprite(app.images[RES_IMG_BOARD]->surface, board_position)
+        new TRT_Sprite(app.images[RES_IMG_BOARD]->surface, &board_position)
     );
 
     app.events->Subscribe(&board, TRT_EventType::EVENT_RENDER, new TRT_RenderEventHandler(WinCheck));
 
-    TRT_Size2D* position_size = new TRT_Size2D {
+    TRT_Size2D position_size {
         .width = app.images[RES_IMG_BOARD]->surface->w / BOARD_SIZE,
         .height = app.images[RES_IMG_BOARD]->surface->h / BOARD_SIZE
     };
@@ -41,9 +37,9 @@ void Game_Init() {
         for (int y = 0; y < BOARD_SIZE; y++) {
             board_tile[x][y].AddComponent(
                 (new TRT_Sprite(app.images[RES_IMG_CROSS]->surface, new TRT_Point2D {
-                    .x = board_position->x + (position_size->width * x),
-                    .y = board_position->y + (position_size->height * y)
-                }, position_size))->SetVisible(false)->SetOpacity(0.5)
+                    .x = board_position.x + (position_size.width * x),
+                    .y = board_position.y + (position_size.height * y)
+                }, &position_size))->SetVisible(false)->SetOpacity(0.5)
             );
 
             board_tile[x][y].AddComponent(
@@ -58,9 +54,10 @@ void Game_Init() {
             );
         }
     }
-}
 
-void Game_Cleanup() {
+    app.Start();
+    app.Quit();
+    return 0;
 }
 
 #pragma endregion Base

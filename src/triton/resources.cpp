@@ -1,15 +1,18 @@
 #include <SDL2/SDL_stdinc.h>
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_image.h>
+#include <string>
 #include "SDL2_extras.hpp"
 #include "resources.hpp"
 #include "utils.hpp"
 
-ImageResource::ImageResource(SDL_Renderer* renderer, const char* name, const char* path) {
+using namespace std;
+
+ImageResource::ImageResource(SDL_Renderer* renderer, string name, string path) {
     debug("Loading image %s: %s", name, path);
 
     this->name = name;
-    surface = IMG_Load(path);
+    surface = IMG_Load(path.c_str());
     texture = SDL_CreateTextureFromSurface(renderer, surface);
     size = new SDL_Size {
         .w = surface->w,
@@ -17,12 +20,12 @@ ImageResource::ImageResource(SDL_Renderer* renderer, const char* name, const cha
     };
 
     if (surface == nullptr) {
-        error("Unable to load image %s: %s", name, SDL_GetError());
+        error("Unable to load image %s: %s", name.c_str(), SDL_GetError());
     }
 }
 
 ImageResource::~ImageResource() {
-    debug("Unloading image %s", name);
+    debug("Unloading image %s", name.c_str());
     SDL_FreeSurface(surface);
     SDL_DestroyTexture(texture);
 }

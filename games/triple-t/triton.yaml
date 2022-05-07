@@ -1,0 +1,6 @@
+loglevel: debug
+assets:
+  images:
+    board: board.png
+    circle: circle.png
+    cross: cross.png
