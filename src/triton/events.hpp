@@ -1,118 +1,233 @@
+/**
+ * Events are used to notify other objects of changes in the application.
+ *
+ * An object can subscribe to an event on the other object's event listener.
+ * MySubject subject;
+ * subject.events.Subscribe(SubjectEventType::EventA, new EventHandler(Handler, ReferenceData));
+ *
+ * The event handler's signature is:
+ * void Handler(EventArgs<MySubject, ReferenceData, EventData> event);
+ *
+ * The object will then emit the event (notify all subscribers)
+ * subject.events.Emit(SubjectEventType::EventA, new EventData());
+ */
+
 #pragma once
 #include <map>
-#include <list>
+#include <vector>
+#include <typeinfo>
 #include "utils.hpp"
-#include "event_handlers.hpp"
 
 using namespace std;
 
-template<class type_t, class... args_t>
-struct deduce_first { using type = type_t; };
+/**
+ * @brief Contains details about the emitted event.
+ */
+template <class SenderType, class ReferenceType, class DataType>
+struct TRT_EventArgs {
+    // The object emitting the event (the one with the event listener attached)
+    SenderType* sender;
 
-template<typename... args_t>
-using first_t = typename deduce_first<args_t...>::type;
+    // Arbitrary data that can be used by the event handler
+    ReferenceType* reference;
 
-class TRT_EventListener {
-public:
-    ~TRT_EventListener();
-
-    map<
-        TRT_EventType,
-        map<TRT_GameObject*, list<TRT_EventHandler<>*>>
-    > handlers;
-
-    template<class D>
-    void Subscribe(TRT_GameObject* object, TRT_EventType type, TRT_EventHandler<D>* handler);
-
-    template<class D>
-    void Unsubscribe(TRT_GameObject* object, TRT_EventType type, TRT_EventHandler<D>* handler);
-
-    void Unsubscribe(TRT_GameObject* object, TRT_EventType type);
-    void Unsubscribe(TRT_GameObject* object);
-
-    template<class ... Args>
-    void Emit(TRT_GameObject* object, TRT_EventType type, Args ... args);
-    void Emit(TRT_GameObject* object, TRT_EventType type);
-
-    template<class ... Args>
-    void Broadcast(TRT_EventType type, Args ... args);
-    void Broadcast(TRT_EventType type);
+    // Data about the event, specific to the event type
+    DataType* data;
 };
 
-template <class ... Args>
-void TRT_EventListener::Emit(TRT_GameObject* object, TRT_EventType type, Args ... args) {
-    verbose("Emitting event %p (TRT_EventType: %#x)", object, type);
+/**
+ * @brief Function for handling events
+ */
+template <class SenderType, class ReferenceType, class DataType>
+using TRT_EventHandlerFunction = void (*)(TRT_EventArgs<SenderType, ReferenceType, DataType>* event);
+
+/**
+ * Base Event Handler class.
+ * To create a new event handler, use the DefineEventHandler macro which will
+ * generate a new class inheriting from this one.
+ *
+ * Example:
+ * DefineEventHandler(TRT_OnGunShoot, TRT_EventSubject object, int damage);
+ *
+ * Will generate a new class TRT_OnGunShoot which receives a handler function with the following signature:
+ * void Handler(TRT_EventSubject object, int damage);
+ *
+ * And is used to subscribe to the event type EVENT_GUN_SHOOT.
+ * event_listener->Subscribe(EVENT_GUN_SHOOT, object, new TRT_EventSubject(Handler));
+ *
+ * Instances of the generated class don't need to be disposed, they are automatically disposed when the event is
+ * unsubscribed.
+ */
+template <class SenderType, class ReferenceType, class DataType>
+class TRT_EventHandler {
+private:
+    TRT_EventHandlerFunction<SenderType, ReferenceType, DataType> _handler;
+    ReferenceType* reference;
+
+public:
+    TRT_EventHandler(TRT_EventHandlerFunction<SenderType, ReferenceType, DataType> handler)
+        : _handler(handler) {
+    }
+    TRT_EventHandler(TRT_EventHandlerFunction<SenderType, ReferenceType, DataType> handler, ReferenceType* reference)
+        : _handler(handler), reference(reference) {
+    }
+
+    // call the handler function, reference value will be overwritten
+    void call(TRT_EventArgs<SenderType, ReferenceType, DataType>* event) {
+        event->reference = reference;
+        this->_handler(event);
+    }
+
+    bool compare(TRT_EventHandler<SenderType, ReferenceType, DataType>* other) {
+        return this->_handler == other->_handler;
+    }
+};
+
+template <class SenderType, class EventType>
+class TRT_EventListener {
+private:
+    SenderType* sender;
+
+    // TODO: Make `ReferenceType` and `DataType` generic instead of void*
+    map<EventType, vector<TRT_EventHandler<SenderType, nullptr_t, void>*>> handlers;
+
+public:
+    TRT_EventListener(SenderType* sender) : sender(sender) {};
+    ~TRT_EventListener();
+
+    template<class ReferenceType, class DataType>
+    void Subscribe(EventType type, TRT_EventHandler<SenderType, ReferenceType, DataType>* handler);
+
+    template<class ReferenceType, class DataType>
+    void Unsubscribe(EventType type, TRT_EventHandler<SenderType, ReferenceType, DataType>* handler);
+    void Unsubscribe(EventType type);
+    void Unsubscribe();
+
+    template <class DataType>
+    void Emit(EventType type, DataType* data);
+};
+
+template <class SenderType, class EventType>
+class TRT_WithEventListener {
+private:
+    TRT_EventListener<SenderType, EventType> listener;
+
+public:
+    TRT_WithEventListener(SenderType* sender) : listener(sender) {};
+
+    template<class ReferenceType, class DataType>
+    void Subscribe(EventType type, TRT_EventHandler<SenderType, ReferenceType, DataType>* handler) {
+        listener.Subscribe(type, handler);
+    }
+
+    template<class ReferenceType, class DataType>
+    void Unsubscribe(EventType type, TRT_EventHandler<SenderType, ReferenceType, DataType>* handler) {
+        listener.Unsubscribe(type, handler);
+    }
+
+    void Unsubscribe(EventType type) {
+        listener.Unsubscribe(type);
+    }
+
+    void Unsubscribe() {
+        listener.Unsubscribe();
+    }
+
+    template <class DataType>
+    void Emit(EventType type, DataType* data) {
+        listener.Emit(type, data);
+    }
+};
+
+template <class SenderType, class EventType>
+template <class DataType>
+void TRT_EventListener<SenderType, EventType>::Emit(EventType type, DataType* data) {
+    verbose("Emitting event %p (%s: %#x)", this->sender, typeid(EventType).name(), type);
 
     if (!this->handlers.count(type)) {
-        verbose("No handlers for event (TRT_EventType: %#x)", type);
+        verbose("No handlers for event %p (%s: %#x)", this->sender, typeid(EventType).name(), type);
         return;
     }
 
-    if (!this->handlers[type].count(object)) {
-        verbose("No handlers for event %p (TRT_EventType: %#x)", object, type);
-        return;
-    }
+    // reference type is nullptr as the handlers are the only ones
+    TRT_EventArgs<SenderType, nullptr_t, void> event;
+    event.sender = this->sender;
+    event.data = (void*)data;
+    event.reference = nullptr; // will be overwritten by each handler
 
-    TRT_EventArgs<> event;
-    event.sender = object;
-    event.data = (TRT_EventArgs<>*)(object->GetEventData<first_t<Args...>>(type));
-
-    for (auto handler : this->handlers[type][object]) {
-        verbose("Calling handler %p (TRT_EventType: %#x) = %p", object, type, handler);
-        handler->call(&event, args...);
+    for (auto handler : this->handlers[type]) {
+        verbose("Calling handler %p (%s: %#x) = %p", this->sender, typeid(EventType).name(), type, handler);
+        handler->call(&event);
     }
 }
 
-template <class ... Args>
-void TRT_EventListener::Broadcast(TRT_EventType type, Args ... args) {
-    verbose("Broadcasting event (TRT_EventType: %#x)", type);
+template <class SenderType, class EventType>
+template<class ReferenceType, class DataType>
+void TRT_EventListener<SenderType, EventType>::Subscribe(EventType type, TRT_EventHandler<SenderType, ReferenceType, DataType>* handler) {
+    verbose("Subscribing %p (%s: %#x) = %p", this->sender, typeid(EventType).name(), type, handler);
 
     if (!this->handlers.count(type)) {
-        verbose("No handlers for event (TRT_EventType: %#x)", type);
+        // TODO: Make `ReferenceType` and `DataType` generic instead of void*
+        this->handlers[type] = vector<TRT_EventHandler<SenderType, nullptr_t, void>*>();
+    }
+
+    this->handlers[type].push_back((TRT_EventHandler<SenderType, nullptr_t, void>*)handler);
+}
+
+template <class SenderType, class EventType>
+template<class ReferenceType, class DataType>
+void TRT_EventListener<SenderType, EventType>::Unsubscribe(EventType type, TRT_EventHandler<SenderType, ReferenceType, DataType>* handler) {
+    verbose("Unsubscribing %p (%s: %#x) = %p", this->sender, typeid(EventType).name(), type, handler);
+
+    if (!this->handlers.count(type)) {
+        verbose("No handlers for event %p (%s: %#x)", this->sender, typeid(EventType).name(), type);
         return;
     }
 
-    for (auto object_list : this->handlers[type]) {
-        TRT_EventArgs<> event;
-        event.sender = object_list.first;
-        event.data = (TRT_EventArgs<>*)(object_list.first->GetEventData<first_t<Args...>>(type));
+    bool removed = false;
+    for (auto it = this->handlers[type].begin(); it != this->handlers[type].end(); it++) {
+        if ((*it)->compare((TRT_EventHandler<SenderType, nullptr_t, void>*)handler)) {
+            removed = true;
+            this->handlers[type].erase(it);
+            break;
+        }
+    }
 
-        for (auto handler : object_list.second) {
-            verbose("Calling handler %p (TRT_EventType: %#x) = %p", object_list.first, type, handler);
-            handler->call(&event, args...);
+    if (!removed) {
+        verbose("%p is not a handler for event %p (%s: %#x)", handler, this->sender, typeid(EventType).name(), type);
+    }
+}
+
+template <class SenderType, class EventType>
+TRT_EventListener<SenderType, EventType>::~TRT_EventListener() {
+    for (auto event_type : this->handlers) {
+        for (auto handler : event_type.second) {
+            Unsubscribe(event_type.first, handler);
         }
     }
 }
 
-
-template<class D>
-void TRT_EventListener::Subscribe(TRT_GameObject* object, TRT_EventType type, TRT_EventHandler<D>* handler) {
-    verbose("Subscribing %p (TRT_EventType: %#x) = %p", object, type, handler);
-
-    if (!this->handlers.count(type)) {
-        this->handlers[type] = map<TRT_GameObject*, list<TRT_EventHandler<>*>>();
+template <class SenderType, class EventType>
+void TRT_EventListener<SenderType, EventType>::Unsubscribe(EventType type) {
+    for (auto handler : this->handlers[type]) {
+        this->handlers[type].erase(handler);
     }
-
-    if (!this->handlers[type].count(object)) {
-        this->handlers[type][object] = list<TRT_EventHandler<>*>();
-    }
-
-    this->handlers[type][object].push_back((TRT_EventHandler<>*)handler);
 }
 
-template<class D>
-void TRT_EventListener::Unsubscribe(TRT_GameObject* object, TRT_EventType type, TRT_EventHandler<D>* handler) {
-    verbose("Unsubscribing %p (TRT_EventType: %#x) = %p", object, type, handler);
-
-    if (!this->handlers.count(type)) {
-        return;
+template <class SenderType, class EventType>
+void TRT_EventListener<SenderType, EventType>::Unsubscribe() {
+    for (auto event_type : this->handlers) {
+        for (auto handler : event_type.second) {
+            Unsubscribe(event_type.first, handler);
+        }
     }
-
-    if (!this->handlers[type].count(object)) {
-        return;
-    }
-
-    this->handlers[type][object].remove_if([handler](TRT_EventHandler<>* h) {
-        return h->compare((TRT_EventHandler<>*)handler);
-    });
 }
+
+#define DefineEventHandler(name, sender_type, data_type) \
+    template <class ReferenceType, class DataType = data_type> \
+    class name : public TRT_EventHandler<sender_type, ReferenceType, DataType> { \
+    public: \
+        name(void (*handler)(TRT_EventArgs<sender_type, ReferenceType, DataType>* event), ReferenceType* reference) \
+            : TRT_EventHandler<sender_type, ReferenceType, DataType>(handler, reference) { \
+        }; \
+    };

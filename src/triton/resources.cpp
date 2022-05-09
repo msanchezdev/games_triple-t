@@ -9,7 +9,7 @@
 using namespace std;
 
 ImageResource::ImageResource(SDL_Renderer* renderer, string name, string path) {
-    debug("Loading image %s: %s", name, path);
+    debug("Loading image %s: %s", name.c_str(), path.c_str());
 
     this->name = name;
     surface = IMG_Load(path.c_str());
@@ -21,6 +21,12 @@ ImageResource::ImageResource(SDL_Renderer* renderer, string name, string path) {
 
     if (surface == nullptr) {
         error("Unable to load image %s: %s", name.c_str(), SDL_GetError());
+        surface = SDL_CreateRGBSurface(0, 0, 0, 0, 0, 0, 0, 0);
+        texture = SDL_CreateTextureFromSurface(renderer, surface);
+        size = new SDL_Size {
+            .w = 0,
+            .h = 0
+        };
     }
 }
 

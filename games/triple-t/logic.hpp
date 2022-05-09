@@ -16,51 +16,8 @@ struct BoardData {
     int y;
 };
 
-void BoardTile_MouseEnter(TRT_EventArgs<void>* event, TRT_MouseEnterEvent* mouse_event) {
-    if (!game_running) return;
-
-    BoardData* data = (BoardData*)event->sender->GetComponent<TRT_MouseListener2D>()->data;
-    TRT_Sprite* sprite = event->sender->GetComponent<TRT_Sprite>();
-    char occoupied_by = board_tile_value[data->x][data->y];
-    info("Mouse Enter: %d, %d\n", data->x, data->y);
-
-    if (occoupied_by == ' ') {
-        sprite->SetImage(app.images[player == 'X' ? RES_IMG_CROSS : RES_IMG_CIRCLE]->surface);
-        sprite->SetVisible(true);
-    }
-}
-
-void BoardTile_MouseLeave(TRT_EventArgs<void>* event, TRT_MouseLeaveEvent* mouse_event) {
-    if (!game_running) return;
-
-    BoardData* data = (BoardData*)event->sender->GetComponent<TRT_MouseListener2D>()->data;
-    TRT_Sprite* sprite = event->sender->GetComponent<TRT_Sprite>();
-    char occoupied_by = board_tile_value[data->x][data->y];
-    info("Mouse Leave: %d, %d\n", data->x, data->y);
-
-    if (occoupied_by == ' ') {
-
-        sprite->SetVisible(false);
-    }
-}
-
-void BoardTile_MouseDown(TRT_EventArgs<void>* event, TRT_MouseDownEvent* mouse_event) {
-    if (!game_running) return;
-
-    BoardData* data = (BoardData*)event->sender->GetComponent<TRT_MouseListener2D>()->data;
-    TRT_Sprite* sprite = event->sender->GetComponent<TRT_Sprite>();
-    char* occoupied_by = &board_tile_value[data->x][data->y];
-    info("Mouse Down: %d, %d\n", data->x, data->y);
-
-    if (*occoupied_by == ' ') {
-        *occoupied_by = player;
-        sprite->SetImage(app.images[player == 'X' ? RES_IMG_CROSS : RES_IMG_CIRCLE]->surface);
-        sprite->SetOpacity(1);
-        player = player == 'X' ? 'O' : 'X';
-    }
-}
 // tic tac toe win check logic
-void WinCheck(TRT_EventArgs<>* event) {
+void WinCheck() {
     // check rows
     for (int i = 0; i < BOARD_SIZE; i++) {
         if (board_tile_value[i][0] == board_tile_value[i][1] && board_tile_value[i][1] == board_tile_value[i][2]) {
@@ -99,4 +56,50 @@ void WinCheck(TRT_EventArgs<>* event) {
             return;
         }
     }
+}
+
+void BoardTile_MouseEnter(TRT_EventArgs<TRT_MouseListener2D, TRT_GameObject, TRT_MouseListener2D::MouseEnterEvent>* event) {
+    if (!game_running) return;
+
+    BoardData* data = (BoardData*)event->sender->data;
+    TRT_Sprite* sprite = event->reference->GetComponent<TRT_Sprite>();
+    char occoupied_by = board_tile_value[data->x][data->y];
+    info("Mouse Enter: %d, %d\n", data->x, data->y);
+
+    if (occoupied_by == ' ') {
+        sprite->SetImage(app.images[player == 'X' ? RES_IMG_CROSS : RES_IMG_CIRCLE]->surface);
+        sprite->SetVisible(true);
+    }
+}
+
+void BoardTile_MouseLeave(TRT_EventArgs<TRT_MouseListener2D, TRT_GameObject, TRT_MouseListener2D::MouseLeaveEvent>* event) {
+    if (!game_running) return;
+
+    BoardData* data = (BoardData*)event->sender->data;
+    TRT_Sprite* sprite = event->reference->GetComponent<TRT_Sprite>();
+    char occoupied_by = board_tile_value[data->x][data->y];
+    info("Mouse Leave: %d, %d\n", data->x, data->y);
+
+    if (occoupied_by == ' ') {
+
+        sprite->SetVisible(false);
+    }
+}
+
+void BoardTile_MouseDown(TRT_EventArgs<TRT_MouseListener2D, TRT_GameObject, TRT_MouseListener2D::MouseDownEvent>* event) {
+    if (!game_running) return;
+
+    BoardData* data = (BoardData*)event->sender->data;
+    TRT_Sprite* sprite = event->reference->GetComponent<TRT_Sprite>();
+    char* occoupied_by = &board_tile_value[data->x][data->y];
+    info("Mouse Down: %d, %d\n", data->x, data->y);
+
+    if (*occoupied_by == ' ') {
+        *occoupied_by = player;
+        sprite->SetImage(app.images[player == 'X' ? RES_IMG_CROSS : RES_IMG_CIRCLE]->surface);
+        sprite->SetOpacity(1);
+        player = player == 'X' ? 'O' : 'X';
+    }
+
+    WinCheck();
 }

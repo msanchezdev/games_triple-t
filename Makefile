@@ -17,7 +17,7 @@ CC = g++
 
 # -w suppresses all warnings
 # -g enables debugging
-COMPILER_FLAGS = -w -Og -g -std=c++17 -Isrc
+COMPILER_FLAGS = -w -O0 -g -std=c++17 -Isrc
 CORE_COMPILER_FLAGS = -shared -fPIC
 GAME_COMPILER_FLAGS =
 

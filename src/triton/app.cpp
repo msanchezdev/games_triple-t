@@ -1,6 +1,8 @@
 #include <map>
 #include <list>
 #include <functional>
+#include <string>
+#include <typeinfo>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <yaml-cpp/yaml.h>
@@ -35,7 +37,7 @@ void App::Quit() {
     this->images.clear();
 
     debug("Unregistering event handlers");
-    delete events;
+    events.Unsubscribe();
 
     debug("Destroying renderer");
     SDL_DestroyRenderer(this->renderer);
@@ -55,7 +57,7 @@ void App::InitializeVideo() {
 
     if (SDL_InitSubSystem(SDL_INIT_VIDEO)) {
         critical("Unable to initialize video subsystem: %s", SDL_GetError());
-        exit(EXIT_CODE_ERROR);
+        throw new std::runtime_error("Unable to initialize video subsystem");
     }
 
     debug("Video subsystem initialized successfully");
@@ -66,12 +68,13 @@ void App::InitializeGameWindow() {
     this->window = SDL_CreateWindow(
         "Triple T",
         SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-        SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_NO_FLAGS
+        this->resolution.width, this->resolution.height,
+        this->fullscreen ? SDL_WINDOW_FULLSCREEN : 0
     );
 
     if (this->window == nullptr) {
         critical("Unable to open game window: %s", SDL_GetError());
-        exit(EXIT_CODE_ERROR);
+        throw new std::runtime_error("Unable to open game window");
     }
 
     debug("Creating main renderer");
@@ -79,7 +82,7 @@ void App::InitializeGameWindow() {
 
     if (this->renderer == nullptr) {
         critical("Unable to create main renderer: %s", SDL_GetError());
-        exit(EXIT_CODE_ERROR);
+        throw new std::runtime_error("Unable to create main renderer");
     }
 
     debug("Game window opened successfully");
@@ -91,7 +94,7 @@ void App::InitializeImages() {
 
     if (!formatLoaded & IMG_INIT_PNG) {
         critical("Unable to initialize image subsystem: %s", IMG_GetError());
-        exit(EXIT_CODE_ERROR);
+        throw new std::runtime_error("Unable to initialize image subsystem");
     }
 
     debug("Image subsystem initialized successfully");
@@ -120,15 +123,15 @@ void App::Loop() {
             break;
 
         case SDL_EventType::SDL_MOUSEMOTION:
-            this->events->Broadcast(TRT_EventType::EVENT_MOUSE_MOVE, &event.motion);
+            this->events.Emit(EventType::MouseMove, &event.motion);
             break;
 
         case SDL_EventType::SDL_MOUSEBUTTONDOWN:
-            this->events->Broadcast(TRT_EventType::EVENT_MOUSE_DOWN, &event.button);
+            this->events.Emit(EventType::MouseButtonDown, &event.button);
             break;
 
         case SDL_EventType::SDL_MOUSEBUTTONUP:
-            this->events->Broadcast(TRT_EventType::EVENT_MOUSE_UP, &event.button);
+            this->events.Emit(EventType::MouseButtonUp, &event.button);
             break;
 
         default:
@@ -139,17 +142,13 @@ void App::Loop() {
 }
 
 void App::Render() {
-    SDL_Rect windowRect = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
     SDL_SetRenderDrawColor(app.renderer, 0xFF, 0xFF, 0xFF, 0xFF);
     SDL_RenderClear(this->renderer);
 
-    this->events->Broadcast(TRT_EventType::EVENT_RENDER);
+    RenderEvent event;
+    this->events.Emit(EventType::Render, &event);
 
     SDL_RenderPresent(this->renderer);
-}
-
-void App::LoadImage(string name, string path) {
-    this->images[name] = new ImageResource(this->renderer, name, path);
 }
 
 void App::LoadConfig() {
@@ -178,6 +177,19 @@ void App::LoadConfig() {
 
         SDL_LogSetPriority(SDL_LOG_CATEGORY_APPLICATION, new_loglevel);
     }
+
+    // set fullscreen
+    if (auto fullscreen = this->config["fullscreen"]) {
+        this->fullscreen = this->config["fullscreen"].as<bool>();
+    }
+
+    // Set resolution
+    if (auto resolution = this->config["resolution"]) {
+        auto resolution_str = this->config["resolution"].as<string>();
+        auto resolution_split = strtok((char*)resolution_str.c_str(), "x");
+        this->resolution.width = atoi(resolution_split);
+        this->resolution.height = atoi(strtok(nullptr, "x"));
+    }
 }
 
 void App::LoadResources() {
@@ -199,4 +211,36 @@ void App::LoadResources() {
             }
         }
     }
+}
+
+void App::LoadImage(string name, string path) {
+    this->images[name] = new ImageResource(this->renderer, name, path);
+}
+
+// ------- Game Objects -------
+
+void App::AddGameObject(TRT_GameObject* game_object) {
+    string name = game_object->name;
+    if (HasGameObject(name)) {
+        throw std::runtime_error("Game object with name '" + name + "' already exists");
+    }
+
+    this->game_objects[name] = game_object;
+}
+
+TRT_GameObject* App::GetGameObject(string name) {
+    return this->game_objects[name];
+}
+
+void App::RemoveGameObject(string name) {
+    if (!HasGameObject(name)) {
+        throw std::runtime_error("Game object with name '" + name + "' does not exist");
+    }
+
+    this->game_objects.erase(name);
+    delete this->game_objects[name];
+}
+
+bool App::HasGameObject(string name) {
+    return this->game_objects[name] != nullptr;
 }

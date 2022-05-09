@@ -2,26 +2,20 @@
 #include <triton/app.hpp>
 #include "sprite.hpp"
 
-void TRT_Sprite_OnRender(TRT_EventArgs<void>* sprite) {
-    TRT_Sprite* sprite_component = sprite->sender->GetComponent<TRT_Sprite>();
-    sprite_component->Render();
+void TRT_Sprite_OnRender(TRT_EventArgs<App, TRT_Sprite, App::RenderEvent>* event) {
+    event->reference->Render();
 }
 
-void TRT_Sprite::OnAttach(TRT_GameObject* game_object) {
-    app.events->Subscribe(game_object, TRT_EventType::EVENT_RENDER, new TRT_RenderEventHandler(TRT_Sprite_OnRender));
+TRT_Sprite::TRT_Sprite(SDL_Surface* surface)
+    : TRT_Sprite(surface, new TRT_Point2D { 0, 0 }) {
 }
 
-void TRT_Sprite::OnDetach(TRT_GameObject* game_object) {
-    app.events->Unsubscribe(game_object, TRT_EventType::EVENT_RENDER, new TRT_RenderEventHandler(TRT_Sprite_OnRender));
+TRT_Sprite::TRT_Sprite(SDL_Surface* surface, TRT_Point2D* position)
+    : TRT_Sprite(surface, position, new TRT_Size2D { surface->w, surface->h }) {
 }
 
-TRT_Sprite::TRT_Sprite(SDL_Surface* surface) {
-    this->surface = surface;
-    this->texture = SDL_CreateTextureFromSurface(app.renderer, surface);
-    this->position = new TRT_Point2D { 0, 0 };
-    this->size = new TRT_Size2D { surface->w, surface->h };
-    this->rect = new TRT_Rect2D { this->position, this->size };
-    this->SetOpacity(1.0);
+TRT_Sprite::TRT_Sprite(SDL_Surface* surface, TRT_Point2D* position, TRT_Size2D* size)
+    : TRT_Sprite(surface, new TRT_Rect2D { position, size }) {
 }
 
 TRT_Sprite::TRT_Sprite(SDL_Surface* surface, TRT_Rect2D* rect) {
@@ -30,24 +24,6 @@ TRT_Sprite::TRT_Sprite(SDL_Surface* surface, TRT_Rect2D* rect) {
     this->position = rect->position;
     this->size = rect->size;
     this->rect = rect;
-    this->SetOpacity(1.0);
-}
-
-TRT_Sprite::TRT_Sprite(SDL_Surface* surface, TRT_Point2D* position) {
-    this->surface = surface;
-    this->texture = SDL_CreateTextureFromSurface(app.renderer, surface);
-    this->position = position;
-    this->size = new TRT_Size2D { surface->w, surface->h };
-    this->rect = new TRT_Rect2D { this->position, this->size };
-    this->SetOpacity(1.0);
-}
-
-TRT_Sprite::TRT_Sprite(SDL_Surface* surface, TRT_Point2D* position, TRT_Size2D* size) {
-    this->surface = surface;
-    this->texture = SDL_CreateTextureFromSurface(app.renderer, surface);
-    this->position = position;
-    this->size = size;
-    this->rect = new TRT_Rect2D { this->position, this->size };
     this->SetOpacity(1.0);
 }
 
@@ -94,4 +70,12 @@ TRT_Sprite* TRT_Sprite::SetOpacity(double opacity) {
     SDL_SetTextureAlphaMod(this->texture, this->opacity);
 
     return this;
+}
+
+void TRT_Sprite::OnAttach(TRT_GameObject* game_object) {
+    app.events.Subscribe(App::EventType::Render, new App::RenderEventHandler(TRT_Sprite_OnRender, this));
+}
+
+void TRT_Sprite::OnDetach(TRT_GameObject* game_object) {
+    app.events.Unsubscribe(App::EventType::Render, new App::RenderEventHandler(TRT_Sprite_OnRender, this));
 }

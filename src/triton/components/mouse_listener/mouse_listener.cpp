@@ -1,98 +1,86 @@
+// TODO: Add data to events
 #include <csignal>
 #include <SDL2/SDL_timer.h>
 #include <triton/app.hpp>
 #include <triton/components/sprite/sprite.hpp>
 #include "mouse_listener.hpp"
 
-void TRT_MouseListener2D_MouseChecker(TRT_EventArgs<TRT_MouseMoveEventData>* object, TRT_MouseMoveEvent* event) {
-    auto event_data = object->sender->GetEventData<TRT_MouseMoveEventData>(TRT_EventType::EVENT_MOUSE_MOVE);
-    auto mouse_listeners = object->sender->GetComponents<TRT_MouseListener2D>();
+void TRT_MouseListener2D_MouseChecker(TRT_EventArgs<App, TRT_MouseListener2D, App::MouseMoveEvent>* event) {
+    auto listener = event->reference;
+    SDL_Point mouse_pos = { event->data->x, event->data->y };
+    SDL_Rect listener_rect = {
+        listener->check_rect->position->x, listener->check_rect->position->y,
+        listener->check_rect->size->width, listener->check_rect->size->height
+    };
 
-    // FIXME: only checks against first sprite attached to the component
-    TRT_Sprite* sprite = object->sender->GetComponent<TRT_Sprite>();
-    SDL_Point mouse_pos = { event->x, event->y };
-    SDL_Rect sprite_rect = { sprite->position->x, sprite->position->y, sprite->size->width, sprite->size->height };
+    if (SDL_PointInRect(&mouse_pos, &listener_rect)) {
+        if (!listener->is_inside) {
+            listener->is_inside = true;
 
-    for (auto mouse_listener : mouse_listeners) {
-        if (SDL_PointInRect(&mouse_pos, &sprite_rect)) {
-            if (!event_data->is_inside) {
-                event_data->is_inside = true;
-
-                if (mouse_listener->handlers.on_mouse_enter) {
-                    TRT_MouseEnterEvent* enter_event = event;
-                    mouse_listener->handlers.on_mouse_enter->call((TRT_EventArgs<void>*)object, enter_event);
-                }
-            } else {
-                if (mouse_listener->handlers.on_mouse_move) {
-                    mouse_listener->handlers.on_mouse_move->call(object, event);
-                }
-            }
-        } else if (event_data->is_inside) {
-            event_data->is_inside = false;
-
-            TRT_MouseLeaveEvent* leave_event = event;
-            mouse_listener->handlers.on_mouse_leave->call((TRT_EventArgs<void>*)object, leave_event);
+            TRT_MouseListener2D::MouseEnterEvent enter_event;
+            listener->Emit(TRT_MouseListener2D::EventType::MouseEnter, &enter_event);
+        } else {
+            TRT_MouseListener2D::MouseMoveEvent move_event;
+            listener->Emit(TRT_MouseListener2D::EventType::MouseMove, &move_event);
         }
+    } else if (listener->is_inside) {
+        listener->is_inside = false;
+
+        TRT_MouseListener2D::MouseLeaveEvent leave_event;
+        listener->Emit(TRT_MouseListener2D::EventType::MouseLeave, &leave_event);
     }
 }
 
-void TRT_MouseListener2D_MouseDownChecker(TRT_EventArgs<>* object, TRT_MouseDownEvent* event) {
-    auto mouse_listeners = object->sender->GetComponents<TRT_MouseListener2D>();
+void TRT_MouseListener2D_MouseDownChecker(TRT_EventArgs<App, TRT_MouseListener2D, App::MouseDownEvent>* event) {
+    auto listener = event->reference;
+    SDL_Point mouse_pos = { event->data->x, event->data->y };
+    SDL_Rect listener_rect = {
+        listener->check_rect->position->x, listener->check_rect->position->y,
+        listener->check_rect->size->width, listener->check_rect->size->height
+    };
 
-    TRT_Sprite* sprite = object->sender->GetComponent<TRT_Sprite>();
-    SDL_Point mouse_pos = { event->x, event->y };
-    SDL_Rect sprite_rect = { sprite->position->x, sprite->position->y, sprite->size->width, sprite->size->height };
-    for (auto mouse_listener : mouse_listeners) {
-        if (SDL_PointInRect(&mouse_pos, &sprite_rect)) {
-            if (mouse_listener->handlers.on_mouse_down) {
-                mouse_listener->handlers.on_mouse_down->call((TRT_EventArgs<void>*)object, event);
-            }
-        }
+    if (SDL_PointInRect(&mouse_pos, &listener_rect)) {
+        TRT_MouseListener2D::MouseDownEvent down_event;
+        listener->Emit(TRT_MouseListener2D::EventType::MouseDown, &down_event);
     }
 }
 
-void TRT_MouseListener2D_MouseUpChecker(TRT_EventArgs<>* object, TRT_MouseUpEvent* event) {
-    auto mouse_listeners = object->sender->GetComponents<TRT_MouseListener2D>();
+void TRT_MouseListener2D_MouseUpChecker(TRT_EventArgs<App, TRT_MouseListener2D, App::MouseUpEvent>* event) {
+    auto listener = event->reference;
+    SDL_Point mouse_pos = { event->data->x, event->data->y };
+    SDL_Rect listener_rect = {
+        listener->check_rect->position->x, listener->check_rect->position->y,
+        listener->check_rect->size->width, listener->check_rect->size->height
+    };
 
-    TRT_Sprite* sprite = object->sender->GetComponent<TRT_Sprite>();
-    SDL_Point mouse_pos = { event->x, event->y };
-    SDL_Rect sprite_rect = { sprite->position->x, sprite->position->y, sprite->size->width, sprite->size->height };
-    for (auto mouse_listener : mouse_listeners) {
-        if (SDL_PointInRect(&mouse_pos, &sprite_rect)) {
-            if (mouse_listener->handlers.on_mouse_up) {
-                mouse_listener->handlers.on_mouse_up->call((TRT_EventArgs<void>*)object, event);
-            }
-        }
+    if (SDL_PointInRect(&mouse_pos, &listener_rect)) {
+        TRT_MouseListener2D::MouseEnterEvent up_event;
+        listener->Emit(TRT_MouseListener2D::EventType::MouseUp, &up_event);
     }
 }
 
-void TRT_MouseListener2D_MouseOverChecker(TRT_EventArgs<>* object, TRT_MouseOverEvent* event) {
-    auto event_data = object->sender->GetEventData<TRT_MouseMoveEventData>(TRT_EventType::EVENT_MOUSE_MOVE);
-    auto mouse_listeners = object->sender->GetComponents<TRT_MouseListener2D>();
+void TRT_MouseListener2D_MouseOverChecker(TRT_EventArgs<App, TRT_MouseListener2D, App::RenderEvent>* event) {
+    auto listener = event->reference;
 
-    for (auto mouse_listener : mouse_listeners) {
-        if (event_data->is_inside) {
-            if (mouse_listener->handlers.on_mouse_over) {
-                TRT_MouseOverEvent over_event;
-                over_event.state = SDL_GetMouseState(&over_event.x, &over_event.y);
-                over_event.timestamp = SDL_GetTicks();
-                over_event.windowID = SDL_GetWindowID(app.window);
-                mouse_listener->handlers.on_mouse_over->call((TRT_EventArgs<void>*)object, &over_event);
-            }
-        }
+    if (listener->is_inside) {
+        TRT_MouseListener2D::MouseOverEvent over_event;
+        // over_event.state = SDL_GetMouseState(&over_event.x, &over_event.y);
+        // over_event.timestamp = SDL_GetTicks();
+        // over_event.windowID = SDL_GetWindowID(app.window);
+        listener->Emit(TRT_MouseListener2D::EventType::MouseOver, &over_event);
     }
 }
 
 void TRT_MouseListener2D::OnAttach(TRT_GameObject* game_object) {
-    app.events->Subscribe(game_object, TRT_EventType::EVENT_MOUSE_MOVE, new TRT_MouseMoveHandler(TRT_MouseListener2D_MouseChecker));
-    app.events->Subscribe(game_object, TRT_EventType::EVENT_MOUSE_DOWN, new TRT_MouseDownHandler(TRT_MouseListener2D_MouseDownChecker));
-    app.events->Subscribe(game_object, TRT_EventType::EVENT_MOUSE_UP, new TRT_MouseUpHandler(TRT_MouseListener2D_MouseUpChecker));
-    app.events->Subscribe(game_object, TRT_EventType::EVENT_RENDER, new TRT_MouseOverHandler(TRT_MouseListener2D_MouseOverChecker));
+    app.events.Subscribe(App::EventType::MouseMove, new App::MouseMoveEventHandler(TRT_MouseListener2D_MouseChecker, this));
+    app.events.Subscribe(App::EventType::MouseButtonDown, new App::MouseDownEventHandler(TRT_MouseListener2D_MouseDownChecker, this));
+    app.events.Subscribe(App::EventType::MouseButtonUp, new App::MouseUpEventHandler(TRT_MouseListener2D_MouseUpChecker, this));
+    app.events.Subscribe(App::EventType::Render, new App::RenderEventHandler(TRT_MouseListener2D_MouseOverChecker, this));
 }
 
 void TRT_MouseListener2D::OnDetach(TRT_GameObject* game_object) {
-    app.events->Unsubscribe(game_object, TRT_EventType::EVENT_MOUSE_MOVE, new TRT_MouseMoveHandler(TRT_MouseListener2D_MouseChecker));
-    app.events->Unsubscribe(game_object, TRT_EventType::EVENT_MOUSE_DOWN, new TRT_MouseDownHandler(TRT_MouseListener2D_MouseDownChecker));
-    app.events->Unsubscribe(game_object, TRT_EventType::EVENT_MOUSE_UP, new TRT_MouseUpHandler(TRT_MouseListener2D_MouseUpChecker));
-    app.events->Unsubscribe(game_object, TRT_EventType::EVENT_RENDER, new TRT_MouseOverHandler(TRT_MouseListener2D_MouseOverChecker));
+    app.events.Unsubscribe(App::EventType::MouseMove, new App::MouseMoveEventHandler(TRT_MouseListener2D_MouseChecker, this));
+    app.events.Unsubscribe(App::EventType::MouseButtonDown, new App::MouseDownEventHandler(TRT_MouseListener2D_MouseDownChecker, this));
+    app.events.Unsubscribe(App::EventType::MouseButtonUp, new App::MouseUpEventHandler(TRT_MouseListener2D_MouseUpChecker, this));
+    app.events.Unsubscribe(App::EventType::Render, new App::RenderEventHandler(TRT_MouseListener2D_MouseOverChecker, this));
 }

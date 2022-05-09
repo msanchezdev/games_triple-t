@@ -1,4 +1,6 @@
 loglevel: debug
+fullscreen: false
+resolution: 640x480
 assets:
   images:
     board: board.png
