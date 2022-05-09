@@ -3,6 +3,8 @@
 #include <triton/components/mouse_listener/mouse_listener.hpp>
 #define BOARD_SIZE 3
 
+using namespace triton;
+
 bool game_running = true;
 char player = 'X';
 char board_tile_value[BOARD_SIZE][BOARD_SIZE] = {
@@ -58,11 +60,11 @@ void WinCheck() {
     }
 }
 
-void BoardTile_MouseEnter(TRT_EventArgs<TRT_MouseListener2D, TRT_GameObject, TRT_MouseListener2D::MouseEnterEvent>* event) {
+void BoardTile_MouseEnter(EventArgs<MouseListener, GameObject, MouseListener::MouseEnterEvent>* event) {
     if (!game_running) return;
 
     BoardData* data = (BoardData*)event->sender->data;
-    TRT_Sprite* sprite = event->reference->GetComponent<TRT_Sprite>();
+    Sprite* sprite = event->reference->GetComponent<Sprite>();
     char occoupied_by = board_tile_value[data->x][data->y];
     info("Mouse Enter: %d, %d\n", data->x, data->y);
 
@@ -72,11 +74,11 @@ void BoardTile_MouseEnter(TRT_EventArgs<TRT_MouseListener2D, TRT_GameObject, TRT
     }
 }
 
-void BoardTile_MouseLeave(TRT_EventArgs<TRT_MouseListener2D, TRT_GameObject, TRT_MouseListener2D::MouseLeaveEvent>* event) {
+void BoardTile_MouseLeave(EventArgs<MouseListener, GameObject, MouseListener::MouseLeaveEvent>* event) {
     if (!game_running) return;
 
     BoardData* data = (BoardData*)event->sender->data;
-    TRT_Sprite* sprite = event->reference->GetComponent<TRT_Sprite>();
+    Sprite* sprite = event->reference->GetComponent<Sprite>();
     char occoupied_by = board_tile_value[data->x][data->y];
     info("Mouse Leave: %d, %d\n", data->x, data->y);
 
@@ -86,11 +88,11 @@ void BoardTile_MouseLeave(TRT_EventArgs<TRT_MouseListener2D, TRT_GameObject, TRT
     }
 }
 
-void BoardTile_MouseDown(TRT_EventArgs<TRT_MouseListener2D, TRT_GameObject, TRT_MouseListener2D::MouseDownEvent>* event) {
+void BoardTile_MouseDown(EventArgs<MouseListener, GameObject, MouseListener::MouseDownEvent>* event) {
     if (!game_running) return;
 
     BoardData* data = (BoardData*)event->sender->data;
-    TRT_Sprite* sprite = event->reference->GetComponent<TRT_Sprite>();
+    Sprite* sprite = event->reference->GetComponent<Sprite>();
     char* occoupied_by = &board_tile_value[data->x][data->y];
     info("Mouse Down: %d, %d\n", data->x, data->y);
 

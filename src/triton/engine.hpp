@@ -1,5 +1,4 @@
 #include "SDL2_extras.hpp"
-#include "game.hpp"
 #include "events.hpp"
 #include "app.hpp"
 #include "utils.hpp"

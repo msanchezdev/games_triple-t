@@ -6,9 +6,10 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <yaml-cpp/yaml.h>
-#include "defs.hpp"
 #include "app.hpp"
 #include "utils.hpp"
+
+using namespace triton;
 
 App app;
 
@@ -219,7 +220,7 @@ void App::LoadImage(string name, string path) {
 
 // ------- Game Objects -------
 
-void App::AddGameObject(TRT_GameObject* game_object) {
+void App::AddGameObject(GameObject* game_object) {
     string name = game_object->name;
     if (HasGameObject(name)) {
         throw std::runtime_error("Game object with name '" + name + "' already exists");
@@ -228,7 +229,7 @@ void App::AddGameObject(TRT_GameObject* game_object) {
     this->game_objects[name] = game_object;
 }
 
-TRT_GameObject* App::GetGameObject(string name) {
+GameObject* App::GetGameObject(string name) {
     return this->game_objects[name];
 }
 

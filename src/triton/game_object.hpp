@@ -4,58 +4,59 @@
 #include <string>
 #include <vector>
 #include <typeinfo>
-
-class TRT_GameObject;
-
 #include "events.hpp"
 
 using namespace std;
 
-class TRT_Component {
-public:
-    TRT_GameObject* owner;
-    void AddToGameObject(TRT_GameObject* game_object);
-    void RemoveFromGameObject(TRT_GameObject* game_object);
+namespace triton {
+    class GameObject;
 
-    TRT_GameObject* GetOwner();
-    void SetOwner(TRT_GameObject* owner);
+    class Component {
+    public:
+        GameObject* owner;
+        void AddToGameObject(GameObject* game_object);
+        void RemoveFromGameObject(GameObject* game_object);
 
-    virtual void OnAttach(TRT_GameObject* game_object);
-    virtual void OnDetach(TRT_GameObject* game_object);
-};
+        GameObject* GetOwner();
+        void SetOwner(GameObject* owner);
 
-class TRT_GameObject {
-private:
-    vector<TRT_Component*> components;
+        virtual void OnAttach(GameObject* game_object);
+        virtual void OnDetach(GameObject* game_object);
+    };
 
-public:
-    string name;
-    TRT_GameObject() : name("GameObject") {};
-    TRT_GameObject(string name);
-    ~TRT_GameObject();
+    class GameObject {
+    private:
+        vector<Component*> components;
 
-    template <class T>
-    vector<T*> GetComponents() {
-        vector<T*> components;
-        for (auto component : this->components) {
-            if (typeid(T) == typeid(*component)) {
-                components.push_back((T*)component);
+    public:
+        string name;
+        GameObject() : name("GameObject") {};
+        GameObject(string name);
+        ~GameObject();
+
+        template <class T>
+        vector<T*> GetComponents() {
+            vector<T*> components;
+            for (auto component : this->components) {
+                if (typeid(T) == typeid(*component)) {
+                    components.push_back((T*)component);
+                }
             }
-        }
-        return components;
-    }
-
-    template <class T>
-    T* GetComponent() {
-        for (auto component : this->components) {
-            if (typeid(T) == typeid(*component)) {
-                return (T*)component;
-            }
+            return components;
         }
 
-        return nullptr;
-    }
+        template <class T>
+        T* GetComponent() {
+            for (auto component : this->components) {
+                if (typeid(T) == typeid(*component)) {
+                    return (T*)component;
+                }
+            }
 
-    void AddComponent(TRT_Component* component);
-    void RemoveComponent(TRT_Component* component);
-};
+            return nullptr;
+        }
+
+        void AddComponent(Component* component);
+        void RemoveComponent(Component* component);
+    };
+}

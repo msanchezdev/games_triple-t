@@ -4,27 +4,29 @@
 #include "game_object.hpp"
 #include "utils.hpp"
 
-void TRT_Component::OnAttach(TRT_GameObject* game_object) {
+using namespace triton;
+
+void Component::OnAttach(GameObject* game_object) {
     verbose("OnAttach not implemented for component %s", typeid(*this).name());
 }
 
-void TRT_Component::OnDetach(TRT_GameObject* game_object) {
+void Component::OnDetach(GameObject* game_object) {
     verbose("OnDetach not implemented for component %s", typeid(*this).name());
 }
 
-void TRT_Component::AddToGameObject(TRT_GameObject* game_object) {
+void Component::AddToGameObject(GameObject* game_object) {
     game_object->AddComponent(this);
 }
 
-void TRT_Component::RemoveFromGameObject(TRT_GameObject* game_object) {
+void Component::RemoveFromGameObject(GameObject* game_object) {
     game_object->RemoveComponent(this);
 }
 
-TRT_GameObject* TRT_Component::GetOwner() {
+GameObject* Component::GetOwner() {
     return owner;
 }
 
-void TRT_Component::SetOwner(TRT_GameObject* owner) {
+void Component::SetOwner(GameObject* owner) {
     if (this->owner != nullptr) {
         this->owner->RemoveComponent(this);
     }
@@ -37,7 +39,7 @@ void TRT_Component::SetOwner(TRT_GameObject* owner) {
 /**
  * @brief Automatically registers the game object with the given name.
  */
-TRT_GameObject::TRT_GameObject(string name) : name(name) {
+GameObject::GameObject(string name) : name(name) {
     app.AddGameObject(this);
 };
 
@@ -45,22 +47,22 @@ TRT_GameObject::TRT_GameObject(string name) : name(name) {
  * @brief When the game object is removed from the app, it will be
  *       automatically destroyed.
  */
-TRT_GameObject::~TRT_GameObject() {
+GameObject::~GameObject() {
     app.events.Unsubscribe();
 
     for (auto& component : this->components) {
         RemoveComponent(component);
     }
 
-    verbose("TRT_GameObject %p destroyed", this);
+    verbose("GameObject %p destroyed", this);
 }
 
-void TRT_GameObject::AddComponent(TRT_Component* component) {
+void GameObject::AddComponent(Component* component) {
     this->components.push_back(component);
     component->OnAttach(this);
 }
 
-void TRT_GameObject::RemoveComponent(TRT_Component* component) {
+void GameObject::RemoveComponent(Component* component) {
     remove_if(
         this->components.begin(),
         this->components.end(),

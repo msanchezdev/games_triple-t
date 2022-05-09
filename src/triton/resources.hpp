@@ -7,13 +7,15 @@
 
 using namespace std;
 
-class ImageResource {
-public:
-    string name;
-    SDL_Texture* texture;
-    SDL_Surface* surface;
-    SDL_Size* size;
+namespace triton {
+    class ImageResource {
+    public:
+        string name;
+        SDL_Texture* texture;
+        SDL_Surface* surface;
+        SDL_Size* size;
 
-    ImageResource(SDL_Renderer* renderer, string name, string path);
-    ~ImageResource();
-};
+        ImageResource(SDL_Renderer* renderer, string name, string path);
+        ~ImageResource();
+    };
+}

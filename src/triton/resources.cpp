@@ -7,6 +7,7 @@
 #include "utils.hpp"
 
 using namespace std;
+using namespace triton;
 
 ImageResource::ImageResource(SDL_Renderer* renderer, string name, string path) {
     debug("Loading image %s: %s", name.c_str(), path.c_str());
