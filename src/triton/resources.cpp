@@ -35,3 +35,19 @@ ImageResource::~ImageResource() {
     SDL_FreeSurface(surface);
     SDL_DestroyTexture(texture);
 }
+
+
+FontResource::FontResource(string name, string path) : name(name) {
+    debug("Loading font %s: %s", name.c_str(), path.c_str());
+
+    font = TTF_OpenFont(path.c_str(), 0);
+
+    if (font == nullptr) {
+        error("Unable to load font %s: %s", name.c_str(), TTF_GetError());
+    }
+}
+
+FontResource::~FontResource() {
+    debug("Unloading font %s", name.c_str());
+    TTF_CloseFont(font);
+}

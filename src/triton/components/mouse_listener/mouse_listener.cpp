@@ -7,7 +7,7 @@
 
 using namespace triton;
 
-void MouseListener_MouseChecker(EventArgs<App, MouseListener, App::MouseMoveEvent>* event) {
+void MouseListener::MouseChecker(EventArgs<App, MouseListener, App::MouseMoveEvent>* event) {
     auto listener = event->reference;
     SDL_Point mouse_pos = { event->data->x, event->data->y };
     SDL_Rect listener_rect = (SDL_Rect)*listener->check_rect;
@@ -30,29 +30,29 @@ void MouseListener_MouseChecker(EventArgs<App, MouseListener, App::MouseMoveEven
     }
 }
 
-void MouseListener_MouseDownChecker(EventArgs<App, MouseListener, App::MouseDownEvent>* event) {
+void MouseListener::MouseButtonDownChecker(EventArgs<App, MouseListener, App::MouseButtonDownEvent>* event) {
     auto listener = event->reference;
     SDL_Point mouse_pos = { event->data->x, event->data->y };
     SDL_Rect listener_rect = (SDL_Rect)*listener->check_rect;
 
     if (SDL_PointInRect(&mouse_pos, &listener_rect)) {
-        MouseListener::MouseDownEvent down_event;
-        listener->Emit(MouseListener::EventType::MouseDown, &down_event);
+        MouseListener::MouseButtonDownEvent down_event;
+        listener->Emit(MouseListener::EventType::MouseButtonDown, &down_event);
     }
 }
 
-void MouseListener_MouseUpChecker(EventArgs<App, MouseListener, App::MouseUpEvent>* event) {
+void MouseListener::MouseButtonUpChecker(EventArgs<App, MouseListener, App::MouseButtonUpEvent>* event) {
     auto listener = event->reference;
     SDL_Point mouse_pos = { event->data->x, event->data->y };
     SDL_Rect listener_rect = (SDL_Rect)*listener->check_rect;
 
     if (SDL_PointInRect(&mouse_pos, &listener_rect)) {
         MouseListener::MouseEnterEvent up_event;
-        listener->Emit(MouseListener::EventType::MouseUp, &up_event);
+        listener->Emit(MouseListener::EventType::MouseButtonUp, &up_event);
     }
 }
 
-void MouseListener_MouseOverChecker(EventArgs<App, MouseListener, App::RenderEvent>* event) {
+void MouseListener::MouseOverChecker(EventArgs<App, MouseListener, App::RenderEvent>* event) {
     auto listener = event->reference;
 
     if (listener->is_inside) {
@@ -65,15 +65,15 @@ void MouseListener_MouseOverChecker(EventArgs<App, MouseListener, App::RenderEve
 }
 
 void MouseListener::OnAttach(GameObject* game_object) {
-    app.events.Subscribe(App::EventType::MouseMove, new App::MouseMoveEventHandler(MouseListener_MouseChecker, this));
-    app.events.Subscribe(App::EventType::MouseButtonDown, new App::MouseDownEventHandler(MouseListener_MouseDownChecker, this));
-    app.events.Subscribe(App::EventType::MouseButtonUp, new App::MouseUpEventHandler(MouseListener_MouseUpChecker, this));
-    app.events.Subscribe(App::EventType::Render, new App::RenderEventHandler(MouseListener_MouseOverChecker, this));
+    app.events.Subscribe(App::EventType::MouseMove, new App::MouseMoveEventHandler(MouseListener::MouseChecker, this));
+    app.events.Subscribe(App::EventType::MouseButtonDown, new App::MouseButtonDownEventHandler(MouseListener::MouseButtonDownChecker, this));
+    app.events.Subscribe(App::EventType::MouseButtonUp, new App::MouseButtonUpEventHandler(MouseListener::MouseButtonUpChecker, this));
+    app.events.Subscribe(App::EventType::Render, new App::RenderEventHandler(MouseListener::MouseOverChecker, this));
 }
 
 void MouseListener::OnDetach(GameObject* game_object) {
-    app.events.Unsubscribe(App::EventType::MouseMove, new App::MouseMoveEventHandler(MouseListener_MouseChecker, this));
-    app.events.Unsubscribe(App::EventType::MouseButtonDown, new App::MouseDownEventHandler(MouseListener_MouseDownChecker, this));
-    app.events.Unsubscribe(App::EventType::MouseButtonUp, new App::MouseUpEventHandler(MouseListener_MouseUpChecker, this));
-    app.events.Unsubscribe(App::EventType::Render, new App::RenderEventHandler(MouseListener_MouseOverChecker, this));
+    app.events.Unsubscribe(App::EventType::MouseMove, new App::MouseMoveEventHandler(MouseListener::MouseChecker, this));
+    app.events.Unsubscribe(App::EventType::MouseButtonDown, new App::MouseButtonDownEventHandler(MouseListener::MouseButtonDownChecker, this));
+    app.events.Unsubscribe(App::EventType::MouseButtonUp, new App::MouseButtonUpEventHandler(MouseListener::MouseButtonUpChecker, this));
+    app.events.Unsubscribe(App::EventType::Render, new App::RenderEventHandler(MouseListener::MouseOverChecker, this));
 }

@@ -5,6 +5,7 @@
 #include <typeinfo>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
 #include <yaml-cpp/yaml.h>
 #include "app.hpp"
 #include "utils.hpp"
@@ -25,6 +26,7 @@ void App::Initialize() {
     this->InitializeVideo();
     this->InitializeGameWindow();
     this->InitializeImages();
+    this->InitializeFonts();
 
     this->LoadResources();
 }
@@ -101,6 +103,17 @@ void App::InitializeImages() {
     }
 
     debug("Image subsystem initialized successfully");
+}
+
+void App::InitializeFonts() {
+    debug("Initializing font subsystem");
+
+    if (TTF_Init()) {
+        critical("Unable to initialize font subsystem: %s", TTF_GetError());
+        throw new std::runtime_error("Unable to initialize font subsystem");
+    }
+
+    debug("Font subsystem initialized successfully");
 }
 
 void App::Loop() {
@@ -213,11 +226,28 @@ void App::LoadResources() {
                 this->LoadImage(name, "assets/images/" + path);
             }
         }
+
+        if (auto fonts = assets["fonts"]) {
+            if (!fonts.IsMap()) {
+                throw std::runtime_error("Invalid 'assets.fonts' config, expected map");
+            }
+
+            for (auto font : fonts) {
+                string name = font.first.as<string>();
+                string path = font.second.as<string>();
+
+                this->LoadFont(name, "assets/fonts/" + path);
+            }
+        }
     }
 }
 
 void App::LoadImage(string name, string path) {
     this->images[name] = new ImageResource(this->renderer, name, path);
+}
+
+void App::LoadFont(string name, string path) {
+    this->fonts[name] = new FontResource(name, path);
 }
 
 // ------- Game Objects -------

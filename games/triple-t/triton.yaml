@@ -6,3 +6,5 @@ assets:
     board: board.png
     circle: circle.png
     cross: cross.png
+  fonts:
+    ShadowsIntoLight: ShadowsIntoLight-Regular.ttf

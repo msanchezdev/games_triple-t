@@ -8,13 +8,21 @@ namespace triton {
     enum class MouseListener_EventType {
         MouseEnter,
         MouseLeave,
-        MouseDown,
-        MouseUp,
+        MouseButtonDown,
+        MouseButtonUp,
         MouseMove,
         MouseOver
     };
 
     class MouseListener : public Component, public WithEventListener<MouseListener, MouseListener_EventType> {
+    private:
+        Rect* check_rect;
+        bool is_inside;
+
+        static void MouseOverChecker(EventArgs<App, MouseListener, App::RenderEvent>* event);
+        static void MouseButtonDownChecker(EventArgs<App, MouseListener, App::MouseButtonDownEvent>* event);
+        static void MouseButtonUpChecker(EventArgs<App, MouseListener, App::MouseButtonUpEvent>* event);
+        static void MouseChecker(EventArgs<App, MouseListener, App::MouseMoveEvent>* event);
     public:
         using EventType = MouseListener_EventType;
 
@@ -24,27 +32,17 @@ namespace triton {
         typedef struct {} MouseLeaveEvent;
         DefineEventHandler(MouseLeaveEventHandler, MouseListener, void*);
 
-        typedef struct {} MouseDownEvent;
-        DefineEventHandler(MouseDownEventHandler, MouseListener, void*);
+        typedef struct {} MouseButtonDownEvent;
+        DefineEventHandler(MouseButtonDownEventHandler, MouseListener, void*);
 
-        typedef struct {} MouseUpEvent;
-        DefineEventHandler(MouseUpEventHandler, MouseListener, void*);
+        typedef struct {} MouseButtonUpEvent;
+        DefineEventHandler(MouseButtonUpEventHandler, MouseListener, void*);
 
         typedef struct {} MouseMoveEvent;
         DefineEventHandler(MouseMoveEventHandler, MouseListener, void*);
 
         typedef struct {} MouseOverEvent;
         DefineEventHandler(MouseOverEventHandler, MouseListener, void*);
-
-    private:
-        friend void MouseListener_MouseOverChecker(EventArgs<App, MouseListener*, App::RenderEvent*>* event);
-        friend void MouseListener_MouseUpChecker(EventArgs<App, MouseListener*, App::MouseUpEvent*>* event);
-        friend void MouseListener_MouseDownChecker(EventArgs<App, MouseListener*, App::MouseDownEvent*>* event);
-        friend void MouseListener_MouseChecker(EventArgs<App, MouseListener*, App::MouseMoveEvent*>* event);
-
-    public:
-        Rect* check_rect;
-        bool is_inside;
 
         // Arbitrary data that can be used by the event handlers
         void* data;

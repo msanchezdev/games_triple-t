@@ -37,11 +37,11 @@ namespace triton {
         using MouseLeaveEvent = SDL_WindowEvent;
         DefineEventHandler(MouseLeaveEventHandler, App, MouseLeaveEvent);
 
-        using MouseUpEvent = SDL_MouseButtonEvent;
-        DefineEventHandler(MouseUpEventHandler, App, MouseUpEvent);
+        using MouseButtonUpEvent = SDL_MouseButtonEvent;
+        DefineEventHandler(MouseButtonUpEventHandler, App, MouseButtonUpEvent);
 
-        using MouseDownEvent = SDL_MouseButtonEvent;
-        DefineEventHandler(MouseDownEventHandler, App, MouseDownEvent);
+        using MouseButtonDownEvent = SDL_MouseButtonEvent;
+        DefineEventHandler(MouseButtonDownEventHandler, App, MouseButtonDownEvent);
 
         using MouseMoveEvent = SDL_MouseMotionEvent;
         DefineEventHandler(MouseMoveEventHandler, App, App::MouseMoveEvent);
@@ -62,6 +62,7 @@ namespace triton {
         void InitializeVideo();
         void InitializeGameWindow();
         void InitializeImages();
+        void InitializeFonts();
 
         void LoadConfig();
         void LoadResources();
@@ -76,7 +77,9 @@ namespace triton {
         SDL_Renderer* renderer = nullptr;
 
         map<string, ImageResource*> images;
+        map<string, FontResource*> fonts;
         GameObject root = GameObject("<root>");
+        GameObject ui = GameObject("<ui>");
         EventListener<App, EventType> events = EventListener<App, EventType>(this);
 
         App();
@@ -87,6 +90,7 @@ namespace triton {
         void Quit();
 
         void LoadImage(string name, string path);
+        void LoadFont(string name, string path);
 
         // Game Objects
         void AddGameObject(GameObject* game_object);

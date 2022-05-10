@@ -2,6 +2,7 @@
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_rect.h>
 #include <triton/engine.hpp>
+#include <triton/ui/label/label.hpp>
 #include <triton/components/sprite/sprite.hpp>
 #include <triton/components/mouse_listener/mouse_listener.hpp>
 #include "resources.hpp"
@@ -14,8 +15,18 @@ GameObject board_tile[board_size][board_size];
 
 #pragma region Base
 
+void CreateUI() {
+    auto label = new ui::Label("Tic Tac Toe", new Vector(app.resolution.width / 2, 10), new ui::LabelStyle {
+        .font_name = RES_FONT_SHADOWSINTOLIGHT,
+        .font_size = 48
+    });
+
+    app.ui.AddComponent(label);
+}
+
 int main(int argc, char** argv) {
     app.Initialize();
+    CreateUI();
 
     Vector board_position(
         app.resolution.width / 2 - app.images[RES_IMG_BOARD]->surface->w / 2,
@@ -55,8 +66,8 @@ int main(int argc, char** argv) {
                 new MouseListener::MouseLeaveEventHandler(BoardTile_MouseLeave, &board_tile[x][y])
             );
             mouse_listener->Subscribe(
-                MouseListener::EventType::MouseDown,
-                new MouseListener::MouseDownEventHandler(BoardTile_MouseDown, &board_tile[x][y])
+                MouseListener::EventType::MouseButtonDown,
+                new MouseListener::MouseButtonDownEventHandler(BoardTile_MouseButtonDown, &board_tile[x][y])
             );
 
             board_tile[x][y].AddComponent(sprite);
@@ -64,7 +75,6 @@ int main(int argc, char** argv) {
             app.AddGameObject(&board_tile[x][y]);
         }
     }
-
 
     app.Start();
     app.Quit();

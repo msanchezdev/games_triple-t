@@ -4,8 +4,8 @@ GAME_FILES = $(GAME_HEADERS) $(GAME_SOURCE)
 CORE_HEADERS = $(wildcard src/triton/*.hpp)
 CORE_SOURCE = $(wildcard src/triton/*.cpp)
 CORE_FILES = $(CORE_HEADERS) $(CORE_SOURCE)
-COMPONENTS_SOURCE = $(wildcard src/triton/components/**/*.cpp)
-COMPONENTS_HEADERS = $(wildcard src/triton/components/**/*.hpp)
+COMPONENTS_SOURCE = $(wildcard src/triton/components/**/*.cpp) $(wildcard src/triton/ui/**/*.cpp)
+COMPONENTS_HEADERS = $(wildcard src/triton/components/**/*.hpp) $(wildcard src/triton/ui/**/*.hpp)
 COMPONENTS_FILES = $(COMPONENTS_SOURCE) $(COMPONENTS_HEADERS)
 
 BIN_DIR = bin/games/triple-t
@@ -22,7 +22,7 @@ CORE_COMPILER_FLAGS = -shared -fPIC
 GAME_COMPILER_FLAGS =
 
 # link sdl2 library
-LINKER_FLAGS = `sdl2-config --libs` -lSDL2_image -lyaml-cpp
+LINKER_FLAGS = `sdl2-config --libs` -lSDL2_image -lSDL2_ttf -lyaml-cpp
 CORE_LINKER_FLAGS =
 GAME_LINKER_FLAGS = -Wl,-rpath=. -L$(BIN_DIR) -l$(LIB_NAME)
 

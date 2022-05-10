@@ -88,7 +88,7 @@ void BoardTile_MouseLeave(EventArgs<MouseListener, GameObject, MouseListener::Mo
     }
 }
 
-void BoardTile_MouseDown(EventArgs<MouseListener, GameObject, MouseListener::MouseDownEvent>* event) {
+void BoardTile_MouseButtonDown(EventArgs<MouseListener, GameObject, MouseListener::MouseButtonDownEvent>* event) {
     if (!game_running) return;
 
     BoardData* data = (BoardData*)event->sender->data;

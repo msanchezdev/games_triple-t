@@ -1,4 +1,5 @@
 #pragma once
+#include <SDL2/SDL_rect.h>
 
 namespace triton {
     typedef struct Vector {
