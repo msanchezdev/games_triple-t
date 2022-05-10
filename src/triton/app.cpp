@@ -13,7 +13,9 @@ using namespace triton;
 
 App app;
 
-App::App() {}
+App::App() {
+    this->AddGameObject(&this->root);
+}
 
 App::~App() {}
 

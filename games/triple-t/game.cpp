@@ -10,38 +10,38 @@
 using namespace triton;
 
 GameObject board("Board");
-GameObject board_tile[BOARD_SIZE][BOARD_SIZE];
+GameObject board_tile[board_size][board_size];
 
 #pragma region Base
 
 int main(int argc, char** argv) {
     app.Initialize();
 
-    Vector board_position {
-        .x = app.resolution.width / 2 - app.images[RES_IMG_BOARD]->surface->w / 2,
-        .y = app.resolution.height / 2 - app.images[RES_IMG_BOARD]->surface->h / 2
-    };
+    Vector board_position(
+        app.resolution.width / 2 - app.images[RES_IMG_BOARD]->surface->w / 2,
+        app.resolution.height / 2 - app.images[RES_IMG_BOARD]->surface->h / 2
+    );
 
     Sprite* board_sprite = new Sprite(app.images[RES_IMG_BOARD]->surface, &board_position);
     board.AddComponent(board_sprite);
 
-    Size position_size {
-        .width = app.images[RES_IMG_BOARD]->surface->w / BOARD_SIZE,
-        .height = app.images[RES_IMG_BOARD]->surface->h / BOARD_SIZE
-    };
+    Size position_size(
+        app.images[RES_IMG_BOARD]->surface->w / board_size,
+        app.images[RES_IMG_BOARD]->surface->h / board_size
+    );
 
-    for (int x = 0; x < BOARD_SIZE; x++) {
-        for (int y = 0; y < BOARD_SIZE; y++) {
+    for (int x = 0; x < board_size; x++) {
+        for (int y = 0; y < board_size; y++) {
             board_tile[x][y].name = "BoardTile-" + to_string(x) + "x" + to_string(y);
 
-            Sprite* sprite = new Sprite(app.images[RES_IMG_CROSS]->surface, new Vector {
-                .x = board_position.x + (position_size.width * x),
-                .y = board_position.y + (position_size.height * y)
-            }, &position_size);
+            Sprite* sprite = new Sprite(app.images[RES_IMG_CROSS]->surface, new Vector(
+                board_position.x + (position_size.width * x),
+                board_position.y + (position_size.height * y)
+            ), &position_size);
             sprite->SetOpacity(0.5)->SetVisible(false);
 
             MouseListener* mouse_listener = new MouseListener(
-                sprite->rect,
+                &sprite->rect,
                 new BoardData {
                 .x = x,
                 .y = y

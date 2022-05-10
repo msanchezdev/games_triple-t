@@ -10,10 +10,7 @@ using namespace triton;
 void MouseListener_MouseChecker(EventArgs<App, MouseListener, App::MouseMoveEvent>* event) {
     auto listener = event->reference;
     SDL_Point mouse_pos = { event->data->x, event->data->y };
-    SDL_Rect listener_rect = {
-        listener->check_rect->position->x, listener->check_rect->position->y,
-        listener->check_rect->size->width, listener->check_rect->size->height
-    };
+    SDL_Rect listener_rect = (SDL_Rect)*listener->check_rect;
 
     if (SDL_PointInRect(&mouse_pos, &listener_rect)) {
         if (!listener->is_inside) {
@@ -36,10 +33,7 @@ void MouseListener_MouseChecker(EventArgs<App, MouseListener, App::MouseMoveEven
 void MouseListener_MouseDownChecker(EventArgs<App, MouseListener, App::MouseDownEvent>* event) {
     auto listener = event->reference;
     SDL_Point mouse_pos = { event->data->x, event->data->y };
-    SDL_Rect listener_rect = {
-        listener->check_rect->position->x, listener->check_rect->position->y,
-        listener->check_rect->size->width, listener->check_rect->size->height
-    };
+    SDL_Rect listener_rect = (SDL_Rect)*listener->check_rect;
 
     if (SDL_PointInRect(&mouse_pos, &listener_rect)) {
         MouseListener::MouseDownEvent down_event;
@@ -50,10 +44,7 @@ void MouseListener_MouseDownChecker(EventArgs<App, MouseListener, App::MouseDown
 void MouseListener_MouseUpChecker(EventArgs<App, MouseListener, App::MouseUpEvent>* event) {
     auto listener = event->reference;
     SDL_Point mouse_pos = { event->data->x, event->data->y };
-    SDL_Rect listener_rect = {
-        listener->check_rect->position->x, listener->check_rect->position->y,
-        listener->check_rect->size->width, listener->check_rect->size->height
-    };
+    SDL_Rect listener_rect = (SDL_Rect)*listener->check_rect;
 
     if (SDL_PointInRect(&mouse_pos, &listener_rect)) {
         MouseListener::MouseEnterEvent up_event;

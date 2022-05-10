@@ -46,7 +46,6 @@ namespace triton {
         using MouseMoveEvent = SDL_MouseMotionEvent;
         DefineEventHandler(MouseMoveEventHandler, App, App::MouseMoveEvent);
 
-        // TODO: implement on render with global and per event data
         typedef struct {
             Uint32 timestamp;   /**< In milliseconds, populated using SDL_GetTicks() */
             Uint32 windowID;    /**< The window with mouse focus, if any */
@@ -58,6 +57,7 @@ namespace triton {
 
     private:
         YAML::Node config;
+        map<string, GameObject*> game_objects;
 
         void InitializeVideo();
         void InitializeGameWindow();
@@ -68,14 +68,10 @@ namespace triton {
 
         void Loop();
         void Render();
-        map<string, GameObject*> game_objects;
 
     public:
-        bool fullscreen;
-        Size resolution {
-            300,
-            300
-        };
+        bool fullscreen = false;
+        Size resolution = Size(300, 300);
         SDL_Window* window = nullptr;
         SDL_Renderer* renderer = nullptr;
 

@@ -9,10 +9,9 @@
 using namespace std;
 using namespace triton;
 
-ImageResource::ImageResource(SDL_Renderer* renderer, string name, string path) {
+ImageResource::ImageResource(SDL_Renderer* renderer, string name, string path) : name(name) {
     debug("Loading image %s: %s", name.c_str(), path.c_str());
 
-    this->name = name;
     surface = IMG_Load(path.c_str());
     texture = SDL_CreateTextureFromSurface(renderer, surface);
     size = new SDL_Size {

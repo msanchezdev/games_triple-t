@@ -11,9 +11,7 @@ namespace triton {
         Uint8 opacity = 255;
 
     public:
-        Vector* position;
-        Size* size;
-        Rect* rect;
+        Rect rect;
         SDL_Texture* texture;
         bool visible = true;
 

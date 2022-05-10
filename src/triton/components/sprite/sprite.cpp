@@ -13,19 +13,17 @@ Sprite::Sprite(SDL_Surface* surface)
 }
 
 Sprite::Sprite(SDL_Surface* surface, Vector* position)
-    : Sprite(surface, position, new Size { surface->w, surface->h }) {
+    : Sprite(surface, position, new Size(surface->w, surface->h)) {
 }
 
 Sprite::Sprite(SDL_Surface* surface, Vector* position, Size* size)
-    : Sprite(surface, new Rect { position, size }) {
+    : Sprite(surface, new Rect(position, size)) {
 }
 
 Sprite::Sprite(SDL_Surface* surface, Rect* rect) {
     this->surface = surface;
     this->texture = SDL_CreateTextureFromSurface(app.renderer, surface);
-    this->position = rect->position;
-    this->size = rect->size;
-    this->rect = rect;
+    this->rect = *rect;
     this->SetOpacity(1.0);
 }
 
@@ -38,13 +36,7 @@ void Sprite::Render() {
         return;
     }
 
-    SDL_Rect rect = {
-        .x = position->x,
-        .y = position->y,
-        .w = size->width,
-        .h = size->height
-    };
-
+    SDL_Rect rect = (SDL_Rect)this->rect;
     SDL_RenderCopy(app.renderer, this->texture, nullptr, &rect);
 }
 

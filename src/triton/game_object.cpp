@@ -36,12 +36,7 @@ void Component::SetOwner(GameObject* owner) {
 
 // ---------- GameObject ----------
 
-/**
- * @brief Automatically registers the game object with the given name.
- */
-GameObject::GameObject(string name) : name(name) {
-    app.AddGameObject(this);
-};
+GameObject::GameObject(string name) : name(name) {};
 
 /**
  * @brief When the game object is removed from the app, it will be
