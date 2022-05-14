@@ -16,17 +16,17 @@ GameObject board_tile[board_size][board_size];
 #pragma region Base
 
 void CreateUI() {
-    auto label = new ui::Label("Tic Tac Toe", new Vector(app.resolution.width / 2, 10), new ui::LabelStyle {
-        .font_name = RES_FONT_SHADOWSINTOLIGHT,
-        .font_size = 48
-    });
+    auto label = new ui::Label("TicTacToe", new Vector(app.resolution.width / 2, 10));
+    label->GetStyle()
+        ->SetFontSize(38)
+        ->SetColor({ 0x00, 0xFF, 0x00, 0xFF })
+        ->SetBackgroundColor({ 0xFF, 0x00, 0x00, 0xFF });
 
     app.ui.AddComponent(label);
 }
 
 int main(int argc, char** argv) {
     app.Initialize();
-    CreateUI();
 
     Vector board_position(
         app.resolution.width / 2 - app.images[RES_IMG_BOARD]->surface->w / 2,
@@ -76,6 +76,7 @@ int main(int argc, char** argv) {
         }
     }
 
+    CreateUI();
     app.Start();
     app.Quit();
 

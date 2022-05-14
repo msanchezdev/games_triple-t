@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SDL2/SDL_render.h>
+#include <triton/app.hpp>
 #include <triton/game_object.hpp>
 #include <triton/types.hpp>
 
@@ -23,6 +24,7 @@ namespace triton {
         static void MouseButtonDownChecker(EventArgs<App, MouseListener, App::MouseButtonDownEvent>* event);
         static void MouseButtonUpChecker(EventArgs<App, MouseListener, App::MouseButtonUpEvent>* event);
         static void MouseChecker(EventArgs<App, MouseListener, App::MouseMoveEvent>* event);
+
     public:
         using EventType = MouseListener_EventType;
 
