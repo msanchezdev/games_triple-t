@@ -237,6 +237,9 @@ namespace triton {
     template <class ReferenceType, class DataType = data_type> \
     class name : public EventHandler<sender_type, ReferenceType, DataType> { \
     public: \
+        name(void (*handler)(EventArgs<sender_type, ReferenceType, DataType>* event)) \
+            : EventHandler<sender_type, ReferenceType, DataType>(handler, nullptr) { \
+        }; \
         name(void (*handler)(EventArgs<sender_type, ReferenceType, DataType>* event), ReferenceType* reference) \
             : EventHandler<sender_type, ReferenceType, DataType>(handler, reference) { \
         }; \

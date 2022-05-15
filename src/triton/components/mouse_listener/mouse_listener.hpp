@@ -25,6 +25,9 @@ namespace triton {
         static void MouseButtonUpChecker(EventArgs<App, MouseListener, App::MouseButtonUpEvent>* event);
         static void MouseChecker(EventArgs<App, MouseListener, App::MouseMoveEvent>* event);
 
+        void OnEnable(GameObject* game_object) override;
+        void OnDisable(GameObject* game_object) override;
+
     public:
         using EventType = MouseListener_EventType;
 
@@ -51,8 +54,5 @@ namespace triton {
 
         MouseListener(Rect* check_rect) : check_rect(check_rect), WithEventListener(this) {}
         MouseListener(Rect* check_rect, void* data) : check_rect(check_rect), data(data), WithEventListener(this) {}
-
-        void OnAttach(GameObject* game_object) override;
-        void OnDetach(GameObject* game_object) override;
     };
 }

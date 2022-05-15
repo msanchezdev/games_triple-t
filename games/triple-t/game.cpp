@@ -1,8 +1,10 @@
+#include <sstream>
 #include <SDL2/SDL_timer.h>
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_rect.h>
 #include <triton/engine.hpp>
 #include <triton/ui/label/label.hpp>
+#include <triton/components/fps_controller/fps_controller.hpp>
 #include <triton/components/sprite/sprite.hpp>
 #include <triton/components/mouse_listener/mouse_listener.hpp>
 #include "resources.hpp"
@@ -15,14 +17,26 @@ GameObject board_tile[board_size][board_size];
 
 #pragma region Base
 
-void CreateUI() {
-    auto label = new ui::Label("TicTacToe", new Vector(app.resolution.width / 2, 10));
-    label->GetStyle()
-        ->SetFontSize(38)
-        ->SetColor({ 0x00, 0xFF, 0x00, 0xFF })
-        ->SetBackgroundColor({ 0xFF, 0x00, 0x00, 0xFF });
+void UpdateFPS_Counter(EventArgs<App, ui::Label, App::RenderEvent>* event) {
+    auto label = event->reference;
+    auto fps_controller = app.root.GetComponent<FPSController>();
+    stringstream ss;
 
-    app.ui.AddComponent(label);
+    ss << "FPS: " << fps_controller->GetFPS();
+    label->SetText(ss.str());
+}
+
+void CreateUI() {
+    auto game_title = new ui::Label("TicTacToe", new Vector(app.resolution.width / 2, 0));
+    game_title->GetStyle()
+        ->SetFontSize(38);
+
+    auto fps_counter = new ui::Label("FPS: 0", new Vector(0, 0));
+
+    app.events.Subscribe(App::EventType::Render, new App::RenderEventHandler(UpdateFPS_Counter, fps_counter));
+    app.ui.AddComponent(fps_counter);
+    app.ui.AddComponent(game_title);
+
 }
 
 int main(int argc, char** argv) {

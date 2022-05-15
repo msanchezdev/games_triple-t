@@ -11,8 +11,6 @@
 #include "resources.hpp"
 #include "events.hpp"
 
-#define App_LoadImage(key) app.LoadImage(#key, __PATH__##key);
-
 using namespace std;
 
 namespace triton {

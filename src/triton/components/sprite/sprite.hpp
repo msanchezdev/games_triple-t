@@ -10,6 +10,9 @@ namespace triton {
         SDL_Surface* surface;
         Uint8 opacity = 255;
 
+        void OnEnable(GameObject* game_object) override;
+        void OnDisable(GameObject* game_object) override;
+
     public:
         Rect rect;
         SDL_Texture* texture;
@@ -27,8 +30,5 @@ namespace triton {
 
         Sprite* SetVisible(bool visible);
         Sprite* SetOpacity(double opacity);
-
-        void OnAttach(GameObject* game_object) override;
-        void OnDetach(GameObject* game_object) override;
     };
 }

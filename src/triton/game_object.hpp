@@ -12,16 +12,26 @@ namespace triton {
     class GameObject;
 
     class Component {
+    private:
+        bool enabled = true;
+
+        void SetOwner(GameObject* owner);
+
+        virtual void OnEnable(GameObject* game_object);
+        virtual void OnDisable(GameObject* game_object);
+
+        friend class GameObject;
     public:
         GameObject* owner;
         void AddToGameObject(GameObject* game_object);
         void RemoveFromGameObject(GameObject* game_object);
 
         GameObject* GetOwner();
-        void SetOwner(GameObject* owner);
 
-        virtual void OnAttach(GameObject* game_object);
-        virtual void OnDetach(GameObject* game_object);
+        bool IsEnabled();
+        void Enable();
+        void Disable();
+
     };
 
     class GameObject {

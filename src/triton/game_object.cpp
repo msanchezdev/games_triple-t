@@ -6,12 +6,16 @@
 
 using namespace triton;
 
-void Component::OnAttach(GameObject* game_object) {
-    verbose("OnAttach not implemented for component %s", typeid(*this).name());
+void Component::OnEnable(GameObject* game_object) {
+    verbose("OnEnable not implemented for component %s", typeid(*this).name());
 }
 
-void Component::OnDetach(GameObject* game_object) {
-    verbose("OnDetach not implemented for component %s", typeid(*this).name());
+void Component::OnDisable(GameObject* game_object) {
+    verbose("OnDisable not implemented for component %s", typeid(*this).name());
+}
+
+bool Component::IsEnabled() {
+    return enabled;
 }
 
 void Component::AddToGameObject(GameObject* game_object) {
@@ -27,11 +31,22 @@ GameObject* Component::GetOwner() {
 }
 
 void Component::SetOwner(GameObject* owner) {
-    if (this->owner != nullptr) {
-        this->owner->RemoveComponent(this);
+    if (this->owner != nullptr && owner != nullptr) {
+        warn("Component %s already has an owner", typeid(*this).name());
+        return;
     }
 
     this->owner = owner;
+}
+
+void Component::Enable() {
+    this->enabled = true;
+    this->OnEnable(this->owner);
+}
+
+void Component::Disable() {
+    this->enabled = false;
+    this->OnDisable(this->owner);
 }
 
 // ---------- GameObject ----------
@@ -54,7 +69,12 @@ GameObject::~GameObject() {
 
 void GameObject::AddComponent(Component* component) {
     this->components.push_back(component);
-    component->OnAttach(this);
+
+    component->SetOwner(this);
+
+    if (component->IsEnabled()) {
+        component->OnEnable(this);
+    }
 }
 
 void GameObject::RemoveComponent(Component* component) {
@@ -65,5 +85,7 @@ void GameObject::RemoveComponent(Component* component) {
             return c == component;
         }
     );
-    component->OnDetach(this);
+
+    component->OnDisable(this);
+    component->SetOwner(nullptr);
 }

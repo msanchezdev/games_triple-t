@@ -9,6 +9,7 @@
 #include <yaml-cpp/yaml.h>
 #include "app.hpp"
 #include "utils.hpp"
+#include "components/fps_controller/fps_controller.hpp"
 
 using namespace triton;
 
@@ -16,6 +17,7 @@ App app;
 
 App::App() {
     this->AddGameObject(&this->root);
+    this->root.AddComponent(new FPSController());
 }
 
 App::~App() {}
@@ -121,9 +123,10 @@ void App::Loop() {
 
     SDL_Event event;
     while (true) {
+        this->Render();
+
         if (!SDL_PollEvent(&event)) continue;
 
-        this->Render();
 
         switch (event.type) {
         case SDL_EventType::SDL_QUIT:

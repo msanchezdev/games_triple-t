@@ -66,6 +66,9 @@ namespace triton::ui {
         static void OnStyleChanged(EventArgs<LabelStyle, Label, LabelStyle::StyleChangedEvent>* event);
         static void OnRender(EventArgs<App, Label, App::RenderEvent>* event);
 
+        void OnEnable(GameObject* game_object) override;
+        void OnDisable(GameObject* game_object) override;
+
     public:
         Label(string text, LabelStyle* style = nullptr);
         Label(string text, Vector* position, LabelStyle* style = nullptr);
@@ -87,8 +90,5 @@ namespace triton::ui {
         bool IsVisible();
 
         LabelStyle* GetStyle();
-
-        void OnAttach(GameObject* game_object) override;
-        void OnDetach(GameObject* game_object) override;
     };
 }
