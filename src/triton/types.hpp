@@ -1,19 +1,11 @@
 #pragma once
+
 #include <SDL2/SDL_rect.h>
+#include "types/vector.hpp"
+#include "types/component.hpp"
+#include "types/game_object.hpp"
 
 namespace triton {
-    typedef struct Vector {
-        int x;
-        int y;
-
-        Vector() : x(0), y(0) {}
-
-        Vector(int x, int y) : x(x), y(y) {}
-
-        operator SDL_Point() {
-            return SDL_Point { x, y };
-        }
-    } Vector;
 
     typedef struct Size {
         int width;

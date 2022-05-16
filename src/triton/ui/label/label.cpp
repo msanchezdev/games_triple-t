@@ -48,11 +48,11 @@ Label::~Label() {
     SDL_FreeSurface(this->surface);
 }
 
-void Label::OnEnable(GameObject* game_object) {
+void Label::OnEnable() {
     app.events.Subscribe(App::EventType::Render, new App::RenderEventHandler(Label::OnRender, this));
 }
 
-void Label::OnDisable(GameObject* game_object) {
+void Label::OnDisable() {
     app.events.Unsubscribe(App::EventType::Render, new App::RenderEventHandler(Label::OnRender, this));
 }
 

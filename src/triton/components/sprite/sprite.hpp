@@ -1,7 +1,7 @@
 #pragma once
 
 #include <SDL2/SDL_render.h>
-#include <triton/game_object.hpp>
+#include <triton/types/game_object.hpp>
 #include <triton/types.hpp>
 
 namespace triton {
@@ -10,8 +10,8 @@ namespace triton {
         SDL_Surface* surface;
         Uint8 opacity = 255;
 
-        void OnEnable(GameObject* game_object) override;
-        void OnDisable(GameObject* game_object) override;
+        void OnEnable() override;
+        void OnDisable() override;
 
     public:
         Rect rect;

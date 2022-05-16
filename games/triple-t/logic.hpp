@@ -1,3 +1,5 @@
+#pragma once
+
 #include <triton/engine.hpp>
 #include <triton/components/sprite/sprite.hpp>
 #include <triton/components/mouse_listener/mouse_listener.hpp>

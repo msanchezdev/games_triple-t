@@ -1,7 +1,7 @@
 #pragma once
 
 #include <triton/app.hpp>
-#include <triton/game_object.hpp>
+#include <triton/types/game_object.hpp>
 #include <triton/stopwatch.hpp>
 
 namespace triton {
@@ -17,8 +17,8 @@ namespace triton {
 
         static void OnRender(EventArgs<App, FPSController, App::RenderEvent>* event);
 
-        void OnEnable(GameObject* game_object) override;
-        void OnDisable(GameObject* game_object) override;
+        void OnEnable() override;
+        void OnDisable() override;
     public:
         int GetFPS();
         void SetCap(int cap);

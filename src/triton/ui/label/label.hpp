@@ -1,12 +1,13 @@
+#pragma once
+
 /**
  * TODO: Add line height control
  */
-#pragma once
 
 #include <string>
 #include <triton/app.hpp>
 #include <triton/events.hpp>
-#include <triton/game_object.hpp>
+#include <triton/types/game_object.hpp>
 #include <triton/types.hpp>
 #include <SDL2/SDL_ttf.h>
 
@@ -66,8 +67,8 @@ namespace triton::ui {
         static void OnStyleChanged(EventArgs<LabelStyle, Label, LabelStyle::StyleChangedEvent>* event);
         static void OnRender(EventArgs<App, Label, App::RenderEvent>* event);
 
-        void OnEnable(GameObject* game_object) override;
-        void OnDisable(GameObject* game_object) override;
+        void OnEnable() override;
+        void OnDisable() override;
 
     public:
         Label(string text, LabelStyle* style = nullptr);

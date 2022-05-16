@@ -66,10 +66,10 @@ Sprite* Sprite::SetOpacity(double opacity) {
     return this;
 }
 
-void Sprite::OnEnable(GameObject* game_object) {
+void Sprite::OnEnable() {
     app.events.Subscribe(App::EventType::Render, new App::RenderEventHandler(Sprite_OnRender, this));
 }
 
-void Sprite::OnDisable(GameObject* game_object) {
+void Sprite::OnDisable() {
     app.events.Unsubscribe(App::EventType::Render, new App::RenderEventHandler(Sprite_OnRender, this));
 }

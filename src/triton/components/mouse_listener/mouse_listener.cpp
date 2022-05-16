@@ -64,14 +64,14 @@ void MouseListener::MouseOverChecker(EventArgs<App, MouseListener, App::RenderEv
     }
 }
 
-void MouseListener::OnEnable(GameObject* game_object) {
+void MouseListener::OnEnable() {
     app.events.Subscribe(App::EventType::MouseMove, new App::MouseMoveEventHandler(MouseListener::MouseChecker, this));
     app.events.Subscribe(App::EventType::MouseButtonDown, new App::MouseButtonDownEventHandler(MouseListener::MouseButtonDownChecker, this));
     app.events.Subscribe(App::EventType::MouseButtonUp, new App::MouseButtonUpEventHandler(MouseListener::MouseButtonUpChecker, this));
     app.events.Subscribe(App::EventType::Render, new App::RenderEventHandler(MouseListener::MouseOverChecker, this));
 }
 
-void MouseListener::OnDisable(GameObject* game_object) {
+void MouseListener::OnDisable() {
     app.events.Unsubscribe(App::EventType::MouseMove, new App::MouseMoveEventHandler(MouseListener::MouseChecker, this));
     app.events.Unsubscribe(App::EventType::MouseButtonDown, new App::MouseButtonDownEventHandler(MouseListener::MouseButtonDownChecker, this));
     app.events.Unsubscribe(App::EventType::MouseButtonUp, new App::MouseButtonUpEventHandler(MouseListener::MouseButtonUpChecker, this));

@@ -1,8 +1,8 @@
 GAME_HEADERS = $(wildcard games/triple-t/*.hpp)
 GAME_SOURCE = $(wildcard games/triple-t/*.cpp)
 GAME_FILES = $(GAME_HEADERS) $(GAME_SOURCE)
-CORE_HEADERS = $(wildcard src/triton/*.hpp)
-CORE_SOURCE = $(wildcard src/triton/*.cpp)
+CORE_HEADERS = $(wildcard src/triton/*.hpp) $(wildcard src/triton/types/*.hpp)
+CORE_SOURCE = $(wildcard src/triton/*.cpp) $(wildcard src/triton/types/*.cpp)
 CORE_FILES = $(CORE_HEADERS) $(CORE_SOURCE)
 COMPONENTS_SOURCE = $(wildcard src/triton/components/**/*.cpp) $(wildcard src/triton/ui/**/*.cpp)
 COMPONENTS_HEADERS = $(wildcard src/triton/components/**/*.hpp) $(wildcard src/triton/ui/**/*.hpp)
@@ -36,7 +36,7 @@ $(BIN_DIR)/$(CORE_BIN): $(CORE_FILES) $(COMPONENTS_FILES)
 	mkdir -p $(BIN_DIR)
 	$(CC) $(CORE_SOURCE) $(COMPONENTS_SOURCE) $(CORE_COMPILER_FLAGS) $(COMPILER_FLAGS) $(CORE_LINKER_FLAGS) $(LINKER_FLAGS) -o $@
 
-assets: $(wildcard games/triple-t/assets) games/triple-t/triton.yaml
+assets: games/triple-t/assets games/triple-t/triton.yaml
 	mkdir -p $(BIN_DIR)
 	cp -r $^ $(BIN_DIR)
 

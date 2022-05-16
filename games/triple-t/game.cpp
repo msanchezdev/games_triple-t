@@ -4,8 +4,8 @@
 #include <SDL2/SDL_rect.h>
 #include <triton/engine.hpp>
 #include <triton/ui/label/label.hpp>
-#include <triton/components/fps_controller/fps_controller.hpp>
 #include <triton/components/sprite/sprite.hpp>
+#include <triton/components/fps_controller/fps_controller.hpp>
 #include <triton/components/mouse_listener/mouse_listener.hpp>
 #include "resources.hpp"
 #include "logic.hpp"
@@ -36,7 +36,6 @@ void CreateUI() {
     app.events.Subscribe(App::EventType::Render, new App::RenderEventHandler(UpdateFPS_Counter, fps_counter));
     app.ui.AddComponent(fps_counter);
     app.ui.AddComponent(game_title);
-
 }
 
 int main(int argc, char** argv) {
@@ -57,7 +56,7 @@ int main(int argc, char** argv) {
 
     for (int x = 0; x < board_size; x++) {
         for (int y = 0; y < board_size; y++) {
-            board_tile[x][y].name = "BoardTile-" + to_string(x) + "x" + to_string(y);
+            board_tile[x][y].SetName("BoardTile-" + to_string(x) + "x" + to_string(y));
 
             Sprite* sprite = new Sprite(app.images[RES_IMG_CROSS]->surface, new Vector(
                 board_position.x + (position_size.width * x),
@@ -86,7 +85,6 @@ int main(int argc, char** argv) {
 
             board_tile[x][y].AddComponent(sprite);
             board_tile[x][y].AddComponent(mouse_listener);
-            app.AddGameObject(&board_tile[x][y]);
         }
     }
 

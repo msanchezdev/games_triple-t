@@ -2,7 +2,6 @@
 #include <list>
 #include <functional>
 #include <string>
-#include <typeinfo>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
@@ -16,7 +15,6 @@ using namespace triton;
 App app;
 
 App::App() {
-    this->AddGameObject(&this->root);
     this->root.AddComponent(new FPSController());
 }
 
@@ -251,32 +249,4 @@ void App::LoadImage(string name, string path) {
 
 void App::LoadFont(string name, string path) {
     this->fonts[name] = new FontResource(name, path);
-}
-
-// ------- Game Objects -------
-
-void App::AddGameObject(GameObject* game_object) {
-    string name = game_object->name;
-    if (HasGameObject(name)) {
-        throw std::runtime_error("Game object with name '" + name + "' already exists");
-    }
-
-    this->game_objects[name] = game_object;
-}
-
-GameObject* App::GetGameObject(string name) {
-    return this->game_objects[name];
-}
-
-void App::RemoveGameObject(string name) {
-    if (!HasGameObject(name)) {
-        throw std::runtime_error("Game object with name '" + name + "' does not exist");
-    }
-
-    this->game_objects.erase(name);
-    delete this->game_objects[name];
-}
-
-bool App::HasGameObject(string name) {
-    return this->game_objects[name] != nullptr;
 }

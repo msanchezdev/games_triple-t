@@ -6,7 +6,6 @@
 #include <map>
 #include <vector>
 #include <functional>
-#include "game_object.hpp"
 #include "types.hpp"
 #include "resources.hpp"
 #include "events.hpp"
@@ -55,7 +54,6 @@ namespace triton {
 
     private:
         YAML::Node config;
-        map<string, GameObject*> game_objects;
 
         void InitializeVideo();
         void InitializeGameWindow();
@@ -89,12 +87,6 @@ namespace triton {
 
         void LoadImage(string name, string path);
         void LoadFont(string name, string path);
-
-        // Game Objects
-        void AddGameObject(GameObject* game_object);
-        GameObject* GetGameObject(string name);
-        void RemoveGameObject(string name);
-        bool HasGameObject(string name);
     };
 }
 

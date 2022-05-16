@@ -2,17 +2,17 @@
 
 #include <SDL2/SDL_stdinc.h>
 #include <triton/app.hpp>
-#include <triton/game_object.hpp>
+#include <triton/types/game_object.hpp>
 #include "fps_controller.hpp"
 
 using namespace triton;
 
-void FPSController::OnEnable(GameObject* game_object) {
+void FPSController::OnEnable() {
     stopwatch.Start();
     app.events.Subscribe(App::EventType::Render, new App::RenderEventHandler(FPSController::OnRender, this));
 }
 
-void FPSController::OnDisable(GameObject* game_object) {
+void FPSController::OnDisable() {
     stopwatch.Stop();
     app.events.Unsubscribe(App::EventType::Render, new App::RenderEventHandler(FPSController::OnRender, this));
 }

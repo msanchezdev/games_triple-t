@@ -2,7 +2,8 @@
 
 #include <SDL2/SDL_render.h>
 #include <triton/app.hpp>
-#include <triton/game_object.hpp>
+#include <triton/types/game_object.hpp>
+#include <triton/types/component.hpp>
 #include <triton/types.hpp>
 
 namespace triton {
@@ -25,8 +26,8 @@ namespace triton {
         static void MouseButtonUpChecker(EventArgs<App, MouseListener, App::MouseButtonUpEvent>* event);
         static void MouseChecker(EventArgs<App, MouseListener, App::MouseMoveEvent>* event);
 
-        void OnEnable(GameObject* game_object) override;
-        void OnDisable(GameObject* game_object) override;
+        void OnEnable() override;
+        void OnDisable() override;
 
     public:
         using EventType = MouseListener_EventType;

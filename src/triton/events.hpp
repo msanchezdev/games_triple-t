@@ -1,3 +1,5 @@
+#pragma once
+
 /**
  * Events are used to notify other objects of changes in the application.
  *
@@ -12,7 +14,6 @@
  * subject.events.Emit(SubjectEventType::EventA, new EventData());
  */
 
-#pragma once
 #include <map>
 #include <vector>
 #include <typeinfo>
