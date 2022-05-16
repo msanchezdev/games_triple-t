@@ -4,18 +4,20 @@
 #include <string>
 #include <list>
 #include <vector>
+#include <triton/types/component.hpp>
+#include <triton/types/transform.hpp>
 
 using namespace std;
 
 namespace triton {
-    class Component;
-
     class GameObject {
     private:
+        Transform transform;
         list<Component*> components;
         string name;
 
     public:
+
         GameObject() : name("GameObject") {};
         GameObject(string name);
 

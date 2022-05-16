@@ -82,8 +82,7 @@ namespace triton {
         ~App();
 
         void Initialize();
-        void Start();
-        void Quit();
+        int Start();
 
         void LoadImage(string name, string path);
         void LoadFont(string name, string path);

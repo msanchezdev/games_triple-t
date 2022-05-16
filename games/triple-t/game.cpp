@@ -89,10 +89,7 @@ int main(int argc, char** argv) {
     }
 
     CreateUI();
-    app.Start();
-    app.Quit();
-
-    return 0;
+    return app.Start();
 }
 
 #pragma endregion Base

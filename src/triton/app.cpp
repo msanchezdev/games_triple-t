@@ -18,24 +18,7 @@ App::App() {
     this->root.AddComponent(new FPSController());
 }
 
-App::~App() {}
-
-void App::Initialize() {
-    this->LoadConfig();
-
-    this->InitializeVideo();
-    this->InitializeGameWindow();
-    this->InitializeImages();
-    this->InitializeFonts();
-
-    this->LoadResources();
-}
-
-void App::Start() {
-    this->Loop();
-}
-
-void App::Quit() {
+App::~App() {
     debug("Shutting down the application");
 
     debug("Unloading images");
@@ -55,6 +38,22 @@ void App::Quit() {
 
     debug("Stopping SDL subsystems");
     SDL_Quit();
+}
+
+void App::Initialize() {
+    this->LoadConfig();
+
+    this->InitializeVideo();
+    this->InitializeGameWindow();
+    this->InitializeImages();
+    this->InitializeFonts();
+
+    this->LoadResources();
+}
+
+int App::Start() {
+    this->Loop();
+    return 0;
 }
 
 void App::InitializeVideo() {

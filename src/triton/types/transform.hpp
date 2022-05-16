@@ -3,7 +3,6 @@
 #include <vector>
 #include "vector.hpp"
 #include "component.hpp"
-#include "game_object.hpp"
 
 using namespace std;
 
@@ -32,5 +31,5 @@ namespace triton {
          * Create a new transform with a given position and scale
          */
         Transform(Vector position, Vector scale, Transform* parent = nullptr);
-    } Transform;
+    };
 }
