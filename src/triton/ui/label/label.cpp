@@ -10,6 +10,13 @@
 using namespace triton;
 using namespace triton::ui;
 
+Label::Label()
+    : Label(nullptr) {
+}
+Label::Label(LabelStyle* style)
+    : Label("", style) {
+}
+
 Label::Label(string text, LabelStyle* style)
     : Label(text, new Vector(), style) {
 }
@@ -57,6 +64,11 @@ void Label::OnDisable() {
 }
 
 void Label::Prerender() {
+    // prevent segfault if prerender called when app has not been initialized
+    if (!app.renderer) {
+        return;
+    }
+
     if (this->texture != nullptr) {
         SDL_DestroyTexture(this->texture);
     }
@@ -80,6 +92,10 @@ void Label::Prerender() {
 
 void Label::OnRender(EventArgs<App, Label, App::RenderEvent>* event) {
     Label* label = event->reference;
+
+    if (!label->texture) {
+        label->Prerender();
+    }
 
     if (!label->visible) {
         return;

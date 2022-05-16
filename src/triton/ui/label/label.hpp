@@ -71,6 +71,8 @@ namespace triton::ui {
         void OnDisable() override;
 
     public:
+        Label();
+        Label(LabelStyle* style = nullptr);
         Label(string text, LabelStyle* style = nullptr);
         Label(string text, Vector* position, LabelStyle* style = nullptr);
         Label(string text, Vector* position, Size* size, LabelStyle* style = nullptr);

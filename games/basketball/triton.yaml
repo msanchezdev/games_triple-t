@@ -1,0 +1,9 @@
+loglevel: debug
+fullscreen: false
+resolution: 640x480
+assets:
+  images:
+    basket: basketball-basket.png
+    ball: basketball-ball.png
+  fonts:
+    ShadowsIntoLight: ShadowsIntoLight-Regular.ttf

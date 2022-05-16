@@ -2,10 +2,19 @@
 
 #include <SDL2/SDL_stdinc.h>
 #include <triton/app.hpp>
+#include <triton/ui/label/label.hpp>
 #include <triton/types/game_object.hpp>
 #include "fps_controller.hpp"
 
 using namespace triton;
+
+void FPSController::OnAttach() {
+    app.root.AddComponent(&this->counter);
+}
+
+void FPSController::OnDetach() {
+    app.root.RemoveComponent(&this->counter);
+}
 
 void FPSController::OnEnable() {
     stopwatch.Start();
@@ -39,6 +48,20 @@ void FPSController::OnRender(EventArgs<App, FPSController, App::RenderEvent>* ev
             SDL_Delay(delay);
         }
     }
+
+    // update the counter
+    if (counter->counter_visible) {
+        counter->counter.SetText("FPS: " + std::to_string(counter->fps));
+    }
+}
+
+void FPSController::SetCounterVisible(bool visible) {
+    if (visible) {
+        counter.Enable();
+    } else {
+        counter.Disable();
+    }
+    counter_visible = visible;
 }
 
 int FPSController::GetFPS() {

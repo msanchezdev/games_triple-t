@@ -8,7 +8,7 @@ COMPONENTS_SOURCE = $(wildcard src/triton/components/**/*.cpp) $(wildcard src/tr
 COMPONENTS_HEADERS = $(wildcard src/triton/components/**/*.hpp) $(wildcard src/triton/ui/**/*.hpp)
 COMPONENTS_FILES = $(COMPONENTS_SOURCE) $(COMPONENTS_HEADERS)
 
-BIN_DIR = bin/games/triple-t
+BIN_DIR = bin
 LIB_NAME = triton-core
 CORE_BIN = lib$(LIB_NAME).so
 GAME_BIN = triple-t
@@ -26,28 +26,40 @@ LINKER_FLAGS = `sdl2-config --libs` -lSDL2_image -lSDL2_ttf -lyaml-cpp
 CORE_LINKER_FLAGS =
 GAME_LINKER_FLAGS = -Wl,-rpath=. -L$(BIN_DIR) -l$(LIB_NAME)
 
-game: $(BIN_DIR)/$(GAME_BIN)
-$(BIN_DIR)/$(GAME_BIN): $(GAME_FILES) core
-	mkdir -p $(BIN_DIR)
-	$(CC) $(GAME_SOURCE) $(GAME_COMPILER_FLAGS) $(COMPILER_FLAGS) $(GAME_LINKER_FLAGS) $(LINKER_FLAGS) -o $@
+games = triple-t basketball
+
+# join bin/ to every file in games
+all: $(games)
+
+$(games): %: $(wildcard games/%/*.cpp) core
+# strip the path and extension from the file name
+	@game_binary=`basename $(patsubst bin/%,%,$@)`;\
+\
+	mkdir -p $(BIN_DIR)/$$game_binary; \
+	echo "Compiling game $$game_binary"; \
+	$(CC) $(wildcard games/$(patsubst bin/%,%,$@)/*.cpp) $(GAME_COMPILER_FLAGS) $(COMPILER_FLAGS) $(GAME_LINKER_FLAGS) $(LINKER_FLAGS) -o $(BIN_DIR)/$$game_binary/$$game_binary; \
+\
+	echo "Copying core files to $(BIN_DIR)/$$game_binary"; \
+	cp $(BIN_DIR)/$(CORE_BIN) $(BIN_DIR)/$$game_binary/; \
+\
+	echo "Copying assets to $(BIN_DIR)/$$game_binary/assets"; \
+	cp -r games/$$game_binary/assets $(BIN_DIR)/$$game_binary/; \
+\
+	echo "Copying triton.yaml to $(BIN_DIR)/$$game_binary/triton.yaml"; \
+	cp games/$$game_binary/triton.yaml $(BIN_DIR)/$$game_binary/; \
+	echo;
+
 
 core: $(BIN_DIR)/$(CORE_BIN)
 $(BIN_DIR)/$(CORE_BIN): $(CORE_FILES) $(COMPONENTS_FILES)
 	mkdir -p $(BIN_DIR)
 	$(CC) $(CORE_SOURCE) $(COMPONENTS_SOURCE) $(CORE_COMPILER_FLAGS) $(COMPILER_FLAGS) $(CORE_LINKER_FLAGS) $(LINKER_FLAGS) -o $@
 
-assets: games/triple-t/assets games/triple-t/triton.yaml
-	mkdir -p $(BIN_DIR)
-	cp -r $^ $(BIN_DIR)
+$(patsubst %,run-%,$(games)): run-%: %
+	cd $(BIN_DIR)/$< && ./$<
 
-run: game assets
-	cd $(BIN_DIR) && ./$(GAME_BIN)
-
-debug: game assets
-	cd $(BIN_DIR) && gdb ./$(GAME_BIN)
-
-debug-core: core
-	cd $(BIN_DIR) && gdb ./$(CORE_BIN)
+$(patsubst %,debug-%,$(games)): debug-%: %
+	cd $(BIN_DIR)/$< && gdb ./$<
 
 clean:
 	rm -rf $(BIN_DIR)
