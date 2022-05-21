@@ -8,27 +8,31 @@
 namespace triton {
 
     typedef struct Size {
-        int width;
-        int height;
+        float width;
+        float height;
 
         Size() : width(0), height(0) {}
 
-        Size(int width, int height) : width(width), height(height) {}
+        Size(float width, float height) : width(width), height(height) {}
 
         operator SDL_Rect() {
-            return SDL_Rect { 0, 0, width, height };
+            return SDL_Rect { 0, 0, (int)width, (int)height };
+        }
+
+        operator SDL_FRect() {
+            return SDL_FRect { 0, 0, width, height };
         }
     } Size;
 
     typedef struct Rect {
-        int x;
-        int y;
-        int width;
-        int height;
+        float x;
+        float y;
+        float width;
+        float height;
 
         Rect() : x(0), y(0), width(0), height(0) {}
 
-        Rect(int x, int y, int width, int height)
+        Rect(float x, float y, float width, float height)
             : x(x), y(y), width(width), height(height) {
         }
 
@@ -37,7 +41,7 @@ namespace triton {
         }
 
         Vector* GetVector() {
-            return new Vector(x, y);
+            return new Vector(x, y, 0);
         }
 
         Size* GetSize() {
@@ -46,6 +50,15 @@ namespace triton {
 
         operator SDL_Rect() {
             return SDL_Rect {
+                .x = (int)x,
+                .y = (int)y,
+                .w = (int)width,
+                .h = (int)height
+            };
+        }
+
+        operator SDL_FRect() {
+            return SDL_FRect {
                 .x = x,
                 .y = y,
                 .w = width,
@@ -53,4 +66,6 @@ namespace triton {
             };
         }
     } Rect;
+
+    using Color = SDL_Color;
 }

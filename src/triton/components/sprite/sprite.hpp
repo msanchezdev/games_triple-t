@@ -8,27 +8,26 @@ namespace triton {
     class Sprite : public Component {
     private:
         SDL_Surface* surface;
+        SDL_Texture* texture;
         Uint8 opacity = 255;
+        bool visible = true;
 
         void OnEnable() override;
         void OnDisable() override;
 
+        static void OnCameraRender(EventArgs<App, Sprite, App::CameraRenderEvent>* event);
     public:
-        Rect rect;
-        SDL_Texture* texture;
-        bool visible = true;
 
         Sprite(SDL_Surface* surface);
-        Sprite(SDL_Surface* surface, Rect* rect);
-        Sprite(SDL_Surface* surface, Vector* position);
-        Sprite(SDL_Surface* surface, Vector* position, Size* size);
         ~Sprite();
 
-        void Render();
         Sprite* SetImage(SDL_Surface* surface);
         SDL_Surface* GetImage();
 
         Sprite* SetVisible(bool visible);
+        bool IsVisible();
+
         Sprite* SetOpacity(double opacity);
+        double GetOpacity();
     };
 }

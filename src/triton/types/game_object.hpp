@@ -12,11 +12,11 @@ using namespace std;
 namespace triton {
     class GameObject {
     private:
-        Transform transform;
         list<Component*> components;
         string name;
 
     public:
+        Transform transform;
 
         GameObject() : name("GameObject") {};
         GameObject(string name);

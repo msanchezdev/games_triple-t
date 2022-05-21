@@ -4,11 +4,11 @@
 using namespace triton;
 
 Transform::Transform(Transform* parent)
-    : Transform(Vector(0, 0), parent) {
+    : Transform(Vector(0, 0, 0), parent) {
 }
 
 Transform::Transform(Vector position, Transform* parent)
-    : Transform(position, Vector(1, 1), parent) {
+    : Transform(position, Vector(1, 1, 1), parent) {
 }
 
 Transform::Transform(Vector position, Vector scale, Transform* parent)

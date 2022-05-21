@@ -12,7 +12,13 @@
 
 using namespace std;
 
+long double operator "" units(long double value);
+
+long double operator "" units(unsigned long long value);
+
 namespace triton {
+    class Camera;
+
     /**
      * Global application object.
      */
@@ -20,6 +26,7 @@ namespace triton {
     public:
         enum class EventType {
             Render,
+            CameraRender,
             MouseMove,
             MouseButtonUp,
             MouseButtonDown,
@@ -27,6 +34,11 @@ namespace triton {
 
         typedef struct {} RenderEvent;
         DefineEventHandler(RenderEventHandler, App, RenderEvent);
+
+        typedef struct {
+            Camera* camera;
+        } CameraRenderEvent;
+        DefineEventHandler(CameraRenderEventHandler, App, CameraRenderEvent);
 
         using MouseEnterEvent = SDL_WindowEvent;
         DefineEventHandler(MouseEnterEventHandler, App, MouseEnterEvent);
@@ -54,6 +66,7 @@ namespace triton {
 
     private:
         YAML::Node config;
+        int pixel_per_unit = 100;
 
         void InitializeVideo();
         void InitializeGameWindow();
@@ -66,12 +79,14 @@ namespace triton {
         void Loop();
         void Render();
 
+        friend class Camera;
     public:
         bool fullscreen = false;
         Size resolution = Size(300, 300);
         SDL_Window* window = nullptr;
         SDL_Renderer* renderer = nullptr;
 
+        vector<Camera*> cameras;
         map<string, ImageResource*> images;
         map<string, FontResource*> fonts;
         GameObject root = GameObject("<root>");
@@ -82,10 +97,13 @@ namespace triton {
         ~App();
 
         void Initialize();
+        float GetPixelPerUnit();
         int Start();
 
         void LoadImage(string name, string path);
         void LoadFont(string name, string path);
+
+        Camera* CreateCamera(string name);
     };
 }
 

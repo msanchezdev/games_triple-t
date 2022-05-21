@@ -8,6 +8,7 @@
 #include <yaml-cpp/yaml.h>
 #include "app.hpp"
 #include "utils.hpp"
+#include "components/camera/camera.hpp"
 #include "components/fps_controller/fps_controller.hpp"
 
 using namespace triton;
@@ -75,6 +76,7 @@ void App::InitializeGameWindow() {
         this->resolution.width, this->resolution.height,
         this->fullscreen ? SDL_WINDOW_FULLSCREEN : 0
     );
+    // SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
 
     if (this->window == nullptr) {
         critical("Unable to open game window: %s", SDL_GetError());
@@ -124,7 +126,6 @@ void App::Loop() {
 
         if (!SDL_PollEvent(&event)) continue;
 
-
         switch (event.type) {
         case SDL_EventType::SDL_QUIT:
             debug("Event Received: Quit");
@@ -160,9 +161,17 @@ void App::Loop() {
 void App::Render() {
     SDL_SetRenderDrawColor(app.renderer, 0xFF, 0xFF, 0xFF, 0xFF);
     SDL_RenderClear(this->renderer);
+    // RenderEvent event;
+    // this->events.Emit(EventType::Render, &event);
 
-    RenderEvent event;
-    this->events.Emit(EventType::Render, &event);
+    // render cameras
+    for (auto camera : this->cameras) {
+        CameraRenderEvent camera_event {
+            .camera = camera,
+        };
+
+        this->events.Emit(EventType::CameraRender, &camera_event);
+    }
 
     SDL_RenderPresent(this->renderer);
 }
@@ -248,4 +257,25 @@ void App::LoadImage(string name, string path) {
 
 void App::LoadFont(string name, string path) {
     this->fonts[name] = new FontResource(name, path);
+}
+
+float App::GetPixelPerUnit() {
+    return this->pixel_per_unit;
+}
+
+Camera* App::CreateCamera(string name) {
+    auto camera_gameobject = new GameObject(name);
+    auto camera = new Camera();
+    camera_gameobject->AddComponent(camera);
+
+    this->cameras.push_back(camera);
+    return camera;
+}
+
+long double operator "" units(long double value) {
+    return value * app.GetPixelPerUnit();
+}
+
+long double operator "" units(unsigned long long value) {
+    return value * app.GetPixelPerUnit();
 }
